@@ -1,7 +1,7 @@
 # Личный проект «Менеджер задач» [![Build status][travis-image]][travis-url]
 
 * Студент: [Анна Чернова](https://up.htmlacademy.ru/ecmascript/9/user/1117421).
-* Наставник: `Неизвестно`.
+* Наставник: `Александр Сушко`.
 
 ---
 
