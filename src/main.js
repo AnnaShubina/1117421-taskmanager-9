@@ -486,9 +486,9 @@ render(main, getSearchTemplate());
 render(main, getFilterTemplate());
 render(main, getBoardTemplate());
 let boardTasks = document.querySelector(`.board__tasks`);
+let board = document.querySelector(`.board`);
 render(boardTasks, getCardEditTemplate());
 for (let i = 0; i < 3; i++) {
   render(boardTasks, getCardTemplate());
 }
-let board = document.querySelector(`.board`);
 render(board, getLoadMoreTemplate());
