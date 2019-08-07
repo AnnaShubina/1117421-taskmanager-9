@@ -1,115 +1,133 @@
 function getMenuTemplate() {
   return `
-    <input
-      type="radio"
-      name="control"
-      id="control__new-task"
-      class="control__input visually-hidden"
-    />
-    <label for="control__new-task" class="control__label control__label--new-task"
-      >+ ADD NEW TASK</label
-    >
-    <input
-      type="radio"
-      name="control"
-      id="control__task"
-      class="control__input visually-hidden"
-      checked
-    />
-    <label for="control__task" class="control__label">TASKS</label>
-    <input
-      type="radio"
-      name="control"
-      id="control__statistic"
-      class="control__input visually-hidden"
-    />
-    <label for="control__statistic" class="control__label"
-      >STATISTICS</label
-    >`
+    <section class="control__btn-wrap">
+      <input
+        type="radio"
+        name="control"
+        id="control__new-task"
+        class="control__input visually-hidden"
+      />
+      <label for="control__new-task" class="control__label control__label--new-task"
+        >+ ADD NEW TASK</label
+      >
+      <input
+        type="radio"
+        name="control"
+        id="control__task"
+        class="control__input visually-hidden"
+        checked
+      />
+      <label for="control__task" class="control__label">TASKS</label>
+      <input
+        type="radio"
+        name="control"
+        id="control__statistic"
+        class="control__input visually-hidden"
+      />
+      <label for="control__statistic" class="control__label"
+        >STATISTICS</label
+      >
+    </section>`.trim();
 }
 
 function getSearchTemplate() {
   return `
-    <input
-      type="text"
-      id="search__input"
-      class="search__input"
-      placeholder="START TYPING — SEARCH BY WORD, #HASHTAG OR DATE"
-    />
-    <label class="visually-hidden" for="search__input">Search</label>
-  `
+    <section class="main__search search container">
+      <input
+        type="text"
+        id="search__input"
+        class="search__input"
+        placeholder="START TYPING — SEARCH BY WORD, #HASHTAG OR DATE"
+      />
+      <label class="visually-hidden" for="search__input">Search</label>
+    </section>`.trim();
 }
 
 function getFilterTemplate() {
-  return ` 
-    <input
-      type="radio"
-      id="filter__all"
-      class="filter__input visually-hidden"
-      name="filter"
-      checked
-    />
-    <label for="filter__all" class="filter__label">
-      All <span class="filter__all-count">13</span></label
-    >
-    <input
-      type="radio"
-      id="filter__overdue"
-      class="filter__input visually-hidden"
-      name="filter"
-      disabled
-    />
-    <label for="filter__overdue" class="filter__label"
-      >Overdue <span class="filter__overdue-count">0</span></label
-    >
-    <input
-      type="radio"
-      id="filter__today"
-      class="filter__input visually-hidden"
-      name="filter"
-      disabled
-    />
-    <label for="filter__today" class="filter__label"
-      >Today <span class="filter__today-count">0</span></label
-    >
-    <input
-      type="radio"
-      id="filter__favorites"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__favorites" class="filter__label"
-      >Favorites <span class="filter__favorites-count">1</span></label
-    >
-    <input
-      type="radio"
-      id="filter__repeating"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__repeating" class="filter__label"
-      >Repeating <span class="filter__repeating-count">1</span></label
-    >
-    <input
-      type="radio"
-      id="filter__tags"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__tags" class="filter__label"
-      >Tags <span class="filter__tags-count">1</span></label
-    >
-    <input
-      type="radio"
-      id="filter__archive"
-      class="filter__input visually-hidden"
-      name="filter"
-    />
-    <label for="filter__archive" class="filter__label"
-      >Archive <span class="filter__archive-count">115</span></label
-    >
-  `
+  return `
+    <section class="main__filter filter container"> 
+      <input
+        type="radio"
+        id="filter__all"
+        class="filter__input visually-hidden"
+        name="filter"
+        checked
+      />
+      <label for="filter__all" class="filter__label">
+        All <span class="filter__all-count">13</span></label
+      >
+      <input
+        type="radio"
+        id="filter__overdue"
+        class="filter__input visually-hidden"
+        name="filter"
+        disabled
+      />
+      <label for="filter__overdue" class="filter__label"
+        >Overdue <span class="filter__overdue-count">0</span></label
+      >
+      <input
+        type="radio"
+        id="filter__today"
+        class="filter__input visually-hidden"
+        name="filter"
+        disabled
+      />
+      <label for="filter__today" class="filter__label"
+        >Today <span class="filter__today-count">0</span></label
+      >
+      <input
+        type="radio"
+        id="filter__favorites"
+        class="filter__input visually-hidden"
+        name="filter"
+      />
+      <label for="filter__favorites" class="filter__label"
+        >Favorites <span class="filter__favorites-count">1</span></label
+      >
+      <input
+        type="radio"
+        id="filter__repeating"
+        class="filter__input visually-hidden"
+        name="filter"
+      />
+      <label for="filter__repeating" class="filter__label"
+        >Repeating <span class="filter__repeating-count">1</span></label
+      >
+      <input
+        type="radio"
+        id="filter__tags"
+        class="filter__input visually-hidden"
+        name="filter"
+      />
+      <label for="filter__tags" class="filter__label"
+        >Tags <span class="filter__tags-count">1</span></label
+      >
+      <input
+        type="radio"
+        id="filter__archive"
+        class="filter__input visually-hidden"
+        name="filter"
+      />
+      <label for="filter__archive" class="filter__label">
+        Archive <span class="filter__archive-count">115</span>
+      </label>
+    </section>`.trim();
 }
+
+function getBoardTemplate() {
+  return `
+    <section class="board container">
+      <div class="board__filter-list">
+        <a href="#" class="board__filter">SORT BY DEFAULT</a>
+        <a href="#" class="board__filter">SORT BY DATE up</a>
+        <a href="#" class="board__filter">SORT BY DATE down</a>
+      </div>
+      <div class="board__tasks">
+      </div>
+    </section>`.trim();
+}
+
 function getCardEditTemplate() {
   return `
     <article class="card card--edit card--yellow card--repeat">
@@ -378,11 +396,12 @@ function getCardEditTemplate() {
         </div>
       </form>
     </article>
-  `
+  `.trim();
 }
-function getCardTemplate(cardClass) {
+
+function getCardTemplate() {
   return `
-    <article class="card ${cardClass}">
+    <article class="card">
       <div class="card__form">
         <div class="card__inner">
           <div class="card__control">
@@ -447,28 +466,29 @@ function getCardTemplate(cardClass) {
         </div>
       </div>
     </article>
-  `
+  `.trim();
 }
-function getLoardMoreTemplate() {
+
+function getLoadMoreTemplate() {
   return `
     <button class="load-more" type="button">load more</button>
-  `
+  `.trim();
 }
 
 function render(wrap, template) {
-  let elems = document.querySelectorAll(wrap);
-  for (let elem of elems) {
-    elem.insertAdjacentHTML( 'beforeEnd', template);
-  }
+  wrap.insertAdjacentHTML(`beforeEnd`, template);
 }
 
-render(".control__btn-wrap", getMenuTemplate());
-render(".search", getSearchTemplate());
-render(".filter", getFilterTemplate());
-render(".board__tasks", getCardEditTemplate());
-render(".board__tasks", getCardTemplate("card--black"));
-render(".board__tasks", getCardTemplate("card--yellow"));
-render(".board__tasks", getCardTemplate("card--blue"));
-render(".board", getLoardMoreTemplate());
-
-
+let mainControl = document.querySelector(`.main__control`);
+let main = document.querySelector(`.main`);
+render(mainControl, getMenuTemplate());
+render(main, getSearchTemplate());
+render(main, getFilterTemplate());
+render(main, getBoardTemplate());
+let boardTasks = document.querySelector(`.board__tasks`);
+render(boardTasks, getCardEditTemplate());
+for (let i = 0; i < 3; i++) {
+  render(boardTasks, getCardTemplate());
+}
+let board = document.querySelector(`.board`);
+render(board, getLoadMoreTemplate());
