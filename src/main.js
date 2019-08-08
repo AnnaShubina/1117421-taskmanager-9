@@ -1,4 +1,4 @@
-function getMenuTemplate() {
+const getMenuTemplate = () => {
   return `
     <section class="control__btn-wrap">
       <input
@@ -30,7 +30,7 @@ function getMenuTemplate() {
     </section>`.trim();
 }
 
-function getSearchTemplate() {
+const getSearchTemplate = () => {
   return `
     <section class="main__search search container">
       <input
@@ -43,7 +43,7 @@ function getSearchTemplate() {
     </section>`.trim();
 }
 
-function getFilterTemplate() {
+const getFilterTemplate = () => {
   return `
     <section class="main__filter filter container"> 
       <input
@@ -115,7 +115,7 @@ function getFilterTemplate() {
     </section>`.trim();
 }
 
-function getBoardTemplate() {
+const getTasksContainerTemplate = () => {
   return `
     <section class="board container">
       <div class="board__filter-list">
@@ -128,7 +128,7 @@ function getBoardTemplate() {
     </section>`.trim();
 }
 
-function getCardEditTemplate() {
+const getTaskFormTemplate = () => {
   return `
     <article class="card card--edit card--yellow card--repeat">
       <form class="card__form" method="get">
@@ -399,7 +399,7 @@ function getCardEditTemplate() {
   `.trim();
 }
 
-function getCardTemplate() {
+const getTaskTemplate = () => {
   return `
     <article class="card">
       <div class="card__form">
@@ -469,26 +469,29 @@ function getCardTemplate() {
   `.trim();
 }
 
-function getLoadMoreTemplate() {
+const getLoadMoreTemplate = () => {
   return `
     <button class="load-more" type="button">load more</button>
   `.trim();
 }
 
-function render(wrap, template) {
+const render = (wrap, template) => {
   wrap.insertAdjacentHTML(`beforeEnd`, template);
 }
 
-let mainControl = document.querySelector(`.main__control`);
-let main = document.querySelector(`.main`);
-render(mainControl, getMenuTemplate());
+const main = document.querySelector(`.main`);
+const menu = document.querySelector(`.main__control`);
+
+render(menu, getMenuTemplate());
 render(main, getSearchTemplate());
 render(main, getFilterTemplate());
-render(main, getBoardTemplate());
-let boardTasks = document.querySelector(`.board__tasks`);
-let board = document.querySelector(`.board`);
-render(boardTasks, getCardEditTemplate());
+render(main, getTasksContainerTemplate());
+
+const tasksContainer = document.querySelector(`.board`);
+const tasksList = document.querySelector(`.board__tasks`);
+
+render(tasksList, getTaskFormTemplate());
 for (let i = 0; i < 3; i++) {
-  render(boardTasks, getCardTemplate());
+  render(tasksList, getTaskTemplate());
 }
-render(board, getLoadMoreTemplate());
+render(tasksContainer, getLoadMoreTemplate());
