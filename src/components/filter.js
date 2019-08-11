@@ -1,5 +1,3 @@
-// components/filter.js
-
 export const getFilterTemplate = () => {
   return `
     <section class="main__filter filter container"> 

@@ -1,5 +1,3 @@
-// components/task.js
-
 export const getTaskTemplate = () => {
   return `
     <article class="card">

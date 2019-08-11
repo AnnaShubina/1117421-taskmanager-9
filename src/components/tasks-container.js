@@ -1,5 +1,3 @@
-// components/tasks-container.js
-
 export const getTasksContainerTemplate = () => {
   return `
     <section class="board container">

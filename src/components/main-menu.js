@@ -1,5 +1,3 @@
-// components/main-menu.js
-
 export const getMenuTemplate = () => {
   return `
     <section class="control__btn-wrap">

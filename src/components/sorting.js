@@ -1,5 +1,3 @@
-// components/sorting.js
-
 export const getSortingTemplate = () => {
   return `
     <div class="board__filter-list">

@@ -1,5 +1,3 @@
-// components/task-form.js
-
 export const getTaskFormTemplate = () => {
   return `
     <article class="card card--edit card--yellow card--repeat">

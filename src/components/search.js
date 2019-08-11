@@ -1,5 +1,3 @@
-// components/search.js
-
 export const getSearchTemplate = () => {
   return `
     <section class="main__search search container">
