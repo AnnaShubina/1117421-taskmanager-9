@@ -1,6 +1,6 @@
-export const getTaskTemplate = ({ description, dueDate, repeatingDays, tags, color }) => {
+export const getTaskTemplate = ({description, dueDate, repeatingDays, tags, color}) => {
   return `
-    <article class="card card--${color} ${Object.keys(repeatingDays).some(day => repeatingDays[day]) ? `card--repeat`: ``}">
+    <article class="card card--${color} ${Object.keys(repeatingDays).some((day) => repeatingDays[day]) ? `card--repeat` : ``}">
       <div class="card__form">
         <div class="card__inner">
           <div class="card__control">
@@ -34,7 +34,7 @@ export const getTaskTemplate = ({ description, dueDate, repeatingDays, tags, col
                 <div class="card__date-deadline">
                   <p class="card__input-deadline-wrap">
                     <span class="card__date">${new Date(dueDate).toDateString()}</span>
-                    <span class="card__time">${new Date(dueDate).toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1")}</span>
+                    <span class="card__time">${new Date(dueDate).toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, `$1`)}</span>
                   </p>
                 </div>
               </div>

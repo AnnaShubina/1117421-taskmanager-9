@@ -6,7 +6,7 @@ import {getSortingTemplate} from './components/sorting.js';
 import {getTaskFormTemplate} from './components/task-form.js';
 import {getTaskTemplate} from './components/task.js';
 import {getLoadMoreTemplate} from './components/load-more.js';
-import {getTask, getTasksList, getFilter} from './data.js';
+import {getTasksList, getFilter} from './data.js';
 
 const render = (wrap, template, place) => {
   wrap.insertAdjacentHTML(place, template);
@@ -24,10 +24,13 @@ const tasksContainer = document.querySelector(`.board`);
 const tasksList = document.querySelector(`.board__tasks`);
 
 render(tasksList, getSortingTemplate(), `beforeBegin`);
-render(tasksList, getTaskFormTemplate(), `beforeEnd`);
 
 const tasks = getTasksList();
-tasks.forEach(() => {
-  render(tasksList, getTaskTemplate(getTask()), `beforeEnd`);
+tasks.forEach((task, i) => {
+  if (i === 0) {
+    render(tasksList, getTaskFormTemplate(), `beforeEnd`);
+  } else {
+    render(tasksList, getTaskTemplate(task), `beforeEnd`);
+  }
 });
 render(tasksContainer, getLoadMoreTemplate(), `beforeEnd`);
