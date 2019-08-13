@@ -26,11 +26,30 @@ const tasksList = document.querySelector(`.board__tasks`);
 render(tasksList, getSortingTemplate(), `beforeBegin`);
 
 const tasks = getTasksList();
-tasks.forEach((task, i) => {
-  if (i === 0) {
-    render(tasksList, getTaskFormTemplate(), `beforeEnd`);
-  } else {
-    render(tasksList, getTaskTemplate(task), `beforeEnd`);
+const renderTasksListRange = (list, from, to) => {
+  if (list.length <= to) {
+    to = list.length;
   }
-});
-render(tasksContainer, getLoadMoreTemplate(), `beforeEnd`);
+  for (let i = from; i < to; i++) {
+    if (i === 0) {
+      render(tasksList, getTaskFormTemplate(list[i]), `beforeEnd`);
+    } else {
+      render(tasksList, getTaskTemplate(list[i]), `beforeEnd`);
+    }
+  }
+};
+const TASK_COUNT = 8;
+
+renderTasksListRange(tasks, 0, TASK_COUNT);
+
+if (tasks.length > TASK_COUNT) {
+  render(tasksContainer, getLoadMoreTemplate(), `beforeEnd`);
+  const loadButton = main.querySelector(`.load-more`);
+  loadButton.addEventListener(`click`, () => {
+    renderTasksListRange(tasks, TASK_COUNT, TASK_COUNT * 2);
+    let tasksCount = tasksList.querySelectorAll(`.card`).length;
+    if (tasksCount >= tasks.length) {
+      loadButton.style.opacity = `0`;
+    }
+  });
+}

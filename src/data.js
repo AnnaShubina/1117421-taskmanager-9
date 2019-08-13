@@ -32,7 +32,7 @@ const getTask = () => ({
   isArchive: false
 });
 
-const getTasksList = () => [getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask()];
+const getTasksList = () => [getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask(), getTask()];
 
 const getFilter = () => ([
   {

@@ -41,11 +41,11 @@ export const getTaskTemplate = ({description, dueDate, repeatingDays, tags, colo
 
               <div class="card__hashtag">
                   <div class="card__hashtag-list">
-                  ${Array.from(tags).map((tag) => `<span class="card__hashtag-inner">
+                  ${Array.from(tags).map((tag, i) => i < 3 ? `<span class="card__hashtag-inner">
                   <span class="card__hashtag-name">
                     #${tag}
                   </span>
-                  </span>`).join(``)}
+                  </span>` : ``).join(``)}
                 </div>
               </div>
             </div>
