@@ -8,6 +8,13 @@ import {getTaskTemplate} from './components/task.js';
 import {getLoadMoreTemplate} from './components/load-more.js';
 import filter from './mocks/filter.js';
 import tasks from './mocks/task.js';
+const TASK_COUNT = 8;
+const RenderPlace = {
+  BEFORBEGIN: `beforeBegin`,
+  AFTERBEGIN: `afterBegin`,
+  BEFOREND: `beforeEnd`,
+  AFTEREND: `afterEnd`
+};
 
 const render = (wrap, template, place) => {
   wrap.insertAdjacentHTML(place, template);
@@ -16,40 +23,32 @@ const render = (wrap, template, place) => {
 const main = document.querySelector(`.main`);
 const menu = document.querySelector(`.main__control`);
 
-render(menu, getMenuTemplate(), `beforeEnd`);
-render(main, getSearchTemplate(), `beforeEnd`);
-render(main, getFilterTemplate(filter), `beforeEnd`);
-render(main, getTasksContainerTemplate(), `beforeEnd`);
+render(menu, getMenuTemplate(), RenderPlace.BEFOREND);
+render(main, getSearchTemplate(), RenderPlace.BEFOREND);
+render(main, getFilterTemplate(filter), RenderPlace.BEFOREND);
+render(main, getTasksContainerTemplate(), RenderPlace.BEFOREND);
 
 const tasksContainer = document.querySelector(`.board`);
 const tasksList = document.querySelector(`.board__tasks`);
 
-render(tasksList, getSortingTemplate(), `beforeBegin`);
+render(tasksList, getSortingTemplate(), RenderPlace.BEFORBEGIN);
+render(tasksList, getTaskFormTemplate(), RenderPlace.BEFOREND);
 
-
-const renderTasksListRange = (list, from, to) => {
-  if (list.length <= to) {
-    to = list.length;
-  }
-  for (let i = from; i < to; i++) {
-    if (i === 0) {
-      render(tasksList, getTaskFormTemplate(list[i]), `beforeEnd`);
-    } else {
-      render(tasksList, getTaskTemplate(list[i]), `beforeEnd`);
-    }
-  }
+const renderTasks = (taskItems, from, to) => {
+  taskItems.slice(from, to).forEach((task) => render(tasksList, getTaskTemplate(task), RenderPlace.BEFOREND));
 };
-const TASK_COUNT = 8;
 
-renderTasksListRange(tasks, 0, TASK_COUNT);
+renderTasks(tasks, 0, TASK_COUNT - 1);
 
-if (tasks.length > TASK_COUNT) {
-  render(tasksContainer, getLoadMoreTemplate(), `beforeEnd`);
+let renderedTasks = tasksList.querySelectorAll(`.card:not(.card--edit)`).length;
+
+if (tasks.length > renderedTasks) {
+  render(tasksContainer, getLoadMoreTemplate(), RenderPlace.BEFOREND);
   const loadButton = main.querySelector(`.load-more`);
   loadButton.addEventListener(`click`, () => {
-    renderTasksListRange(tasks, TASK_COUNT, TASK_COUNT * 2);
-    let tasksCount = tasksList.querySelectorAll(`.card`).length;
-    if (tasksCount >= tasks.length) {
+    renderTasks(tasks, renderedTasks, renderedTasks + TASK_COUNT);
+    renderedTasks = tasksList.querySelectorAll(`.card:not(.card--edit)`).length;
+    if (renderedTasks >= tasks.length) {
       loadButton.style.opacity = `0`;
     }
   });
