@@ -1,30 +1,33 @@
+import tasks from './task.js';
+const DAYS = 7
+
 export default [
     {
       title: `All`,
-      count: 0
+      count: tasks.length - tasks.filter(({isArchive}) => isArchive).length
     },
     {
       title: `Overdue`,
-      count: 0
+      count: tasks.filter(({dueDate}) => new Date(dueDate).getDate() < new Date().getDate() - DAYS).length
     },
     {
       title: `Today`,
-      count: 3
+      count: tasks.filter(({dueDate}) => new Date(dueDate).getDate() === new Date().getDate()).length
     },
     {
       title: `Favorites`,
-      count: 10
+      count: tasks.filter(({isFavorite}) => isFavorite).length
     },
     {
       title: `Repeating`,
-      count: 0
+      count: tasks.filter(({repeatingDays}) => Object.keys(repeatingDays).some((day) => repeatingDays[day])).length
     },
     {
       title: `Tags`,
-      count: 0
+      count: tasks.filter(({tags}) => tags.size).length
     },
     {
       title: `Archive`,
-      count: 20
+      count: tasks.filter(({isArchive}) => isArchive).length
     }
 ]

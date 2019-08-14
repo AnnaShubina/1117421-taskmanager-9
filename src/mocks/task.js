@@ -31,7 +31,7 @@ const getTask = () => ({
     isFavorite: false,
     isArchive: false
 });
-const COUNT = 15;
+const COUNT = 5;
   
 export default new Array(COUNT).fill(``).map(getTask);
   
