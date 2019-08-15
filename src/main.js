@@ -40,14 +40,14 @@ const renderTasks = (taskItems, from, to) => {
 
 renderTasks(tasks, 0, TASK_COUNT - 1);
 
-let renderedTasks = tasksList.querySelectorAll(`.card:not(.card--edit)`).length;
+let renderedTasks = TASK_COUNT - 1;
 
 if (tasks.length > renderedTasks) {
   render(tasksContainer, getLoadMoreTemplate(), RenderPlace.BEFOREND);
   const loadButton = main.querySelector(`.load-more`);
   loadButton.addEventListener(`click`, () => {
     renderTasks(tasks, renderedTasks, renderedTasks + TASK_COUNT);
-    renderedTasks = tasksList.querySelectorAll(`.card:not(.card--edit)`).length;
+    renderedTasks = TASK_COUNT + renderedTasks;
     if (renderedTasks >= tasks.length) {
       loadButton.style.opacity = `0`;
     }
