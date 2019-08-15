@@ -1,5 +1,4 @@
 import tasks from './task.js';
-const DAYS = 7;
 
 export default [
   {
@@ -8,7 +7,7 @@ export default [
   },
   {
     title: `Overdue`,
-    count: tasks.filter(({dueDate}) => new Date(dueDate).getDate() < new Date().getDate() - DAYS).length
+    count: tasks.filter(({dueDate}) => new Date(dueDate) < Date.now()).length
   },
   {
     title: `Today`,
