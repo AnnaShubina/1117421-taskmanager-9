@@ -1,3 +1,4 @@
+const COUNT = 18;
 const getTask = () => ({
   description: [
     `Изучить теорию`,
@@ -31,6 +32,5 @@ const getTask = () => ({
   isFavorite: false,
   isArchive: false
 });
-const COUNT = 18;
 
 export default new Array(COUNT).fill(``).map(getTask);
