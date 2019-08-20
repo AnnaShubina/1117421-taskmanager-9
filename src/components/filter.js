@@ -1,6 +1,15 @@
 export default class Filter {
   constructor(filtres) {
     this._filtres = filtres;
+    this._element = null;
+  }
+  
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
   }
 
   getTemplate() {
