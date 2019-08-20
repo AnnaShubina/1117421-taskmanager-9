@@ -57,8 +57,8 @@ const renderTask = (taskMock) => {
     });
 
   taskEdit.getElement()
-    .querySelector(`.card__save`)
-    .addEventListener(`click`, () => {
+    .querySelector(`form`)
+    .addEventListener(`submit`, () => {
       tasksContainer.replaceChild(task.getElement(), taskEdit.getElement());
       document.removeEventListener(`keydown`, onEscKeyDown);
     });
