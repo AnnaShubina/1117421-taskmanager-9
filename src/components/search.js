@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 export default class Search {
   constructor() {
     this._element = null;

@@ -1,54 +1,87 @@
-import {getMenuTemplate} from './components/main-menu.js';
-import {getSearchTemplate} from './components/search.js';
-import {getFilterTemplate} from './components/filter.js';
-import {getTasksContainerTemplate} from './components/tasks-container.js';
-import {getSortingTemplate} from './components/sorting.js';
-import {getTaskFormTemplate} from './components/task-form.js';
-import {getTaskTemplate} from './components/task.js';
-import {getLoadMoreTemplate} from './components/load-more.js';
-import filter from './mocks/filter.js';
-import tasks from './mocks/task.js';
+import Menu from './components/main-menu.js';
+import Search from './components/search.js';
+import Filter from './components/filter.js';
+import TasksContainer from './components/tasks-container.js';
+import Sorting from './components/sorting.js';
+import TaskForm from './components/task-form.js';
+import Task from './components/task.js';
+import LoadMore from './components/load-more.js';
+import filterMocks from './mocks/filter.js';
+import taskMocks from './mocks/task.js';
+import {Position, render} from './utils.js'
 const TASK_COUNT = 8;
-const RenderPlace = {
-  BEFORBEGIN: `beforeBegin`,
-  AFTERBEGIN: `afterBegin`,
-  BEFOREND: `beforeEnd`,
-  AFTEREND: `afterEnd`
+
+const mainContainer = document.querySelector(`.main`);
+const menuContainer = document.querySelector(`.main__control`);
+const menu = new Menu;
+const search = new Search;
+const filter = new Filter(filterMocks);
+const board = new TasksContainer;
+const sorting = new Sorting;
+const loadBtn = new LoadMore;
+
+render(menuContainer, menu.getElement(), Position.BEFOREEND);
+render(mainContainer, search.getElement(), Position.BEFOREEND);
+render(mainContainer, filter.getElement(), Position.BEFOREEND);
+render(mainContainer, board.getElement(), Position.BEFOREEND);
+
+const tasksContainer = document.querySelector(`.board__tasks`);
+const tasksWrap = document.querySelector(`.board`);
+render(tasksWrap, sorting.getElement(), Position.AFTERBEGIN);
+
+const renderTask = (taskMock) => {
+  const task = new Task(taskMock);
+  const taskEdit = new TaskForm(taskMock);
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      tasksContainer.replaceChild(task.getElement(), taskEdit.getElement());
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  task.getElement()
+    .querySelector(`.card__btn--edit`)
+    .addEventListener(`click`, () => {
+      tasksContainer.replaceChild(taskEdit.getElement(), task.getElement());
+      document.addEventListener(`keydown`, onEscKeyDown);
+    });
+
+  taskEdit.getElement().querySelector(`textarea`)
+    .addEventListener(`focus`, () => {
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    });
+
+  taskEdit.getElement().querySelector(`textarea`)
+    .addEventListener(`blur`, () => {
+      document.addEventListener(`keydown`, onEscKeyDown);
+    });
+
+  taskEdit.getElement()
+    .querySelector(`.card__save`)
+    .addEventListener(`click`, () => {
+      tasksContainer.replaceChild(task.getElement(), taskEdit.getElement());
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    });
+
+  render(tasksContainer, task.getElement(), Position.BEFOREEND);
 };
-
-const render = (wrap, template, place) => {
-  wrap.insertAdjacentHTML(place, template);
-};
-
-const main = document.querySelector(`.main`);
-const menu = document.querySelector(`.main__control`);
-
-render(menu, getMenuTemplate(), RenderPlace.BEFOREND);
-render(main, getSearchTemplate(), RenderPlace.BEFOREND);
-render(main, getFilterTemplate(filter), RenderPlace.BEFOREND);
-render(main, getTasksContainerTemplate(), RenderPlace.BEFOREND);
-
-const tasksContainer = document.querySelector(`.board`);
-const tasksList = document.querySelector(`.board__tasks`);
-
-render(tasksList, getSortingTemplate(), RenderPlace.BEFORBEGIN);
-render(tasksList, getTaskFormTemplate(), RenderPlace.BEFOREND);
 
 const renderTasks = (taskItems, from, to) => {
-  taskItems.slice(from, to).forEach((task) => render(tasksList, getTaskTemplate(task), RenderPlace.BEFOREND));
+  taskItems.slice(from, to).forEach((task) => renderTask(task));
 };
 
-renderTasks(tasks, 0, TASK_COUNT - 1);
+renderTasks(taskMocks, 0, TASK_COUNT);
 
-let renderedTasks = TASK_COUNT - 1;
+let renderedTasks = TASK_COUNT;
 
-if (tasks.length > renderedTasks) {
-  render(tasksContainer, getLoadMoreTemplate(), RenderPlace.BEFOREND);
-  const loadButton = main.querySelector(`.load-more`);
+if (taskMocks.length > renderedTasks) {
+  render(tasksWrap, loadBtn.getElement(), Position.BEFOREEND);
+  const loadButton = mainContainer.querySelector(`.load-more`);
   loadButton.addEventListener(`click`, () => {
-    renderTasks(tasks, renderedTasks, renderedTasks + TASK_COUNT);
+    renderTasks(taskMocks, renderedTasks, renderedTasks + TASK_COUNT);
     renderedTasks = TASK_COUNT + renderedTasks;
-    if (renderedTasks >= tasks.length) {
+    if (renderedTasks >= taskMocks.length) {
       loadButton.style.opacity = `0`;
     }
   });

@@ -25,3 +25,5 @@ const unrender = (element) => {
     element.remove();
   }
 };
+
+export {Position, createElement, render, unrender};

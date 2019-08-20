@@ -1,9 +1,11 @@
+import {createElement} from '../utils.js';
+
 export default class Filter {
   constructor(filtres) {
     this._filtres = filtres;
     this._element = null;
   }
-  
+
   getElement() {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
@@ -19,7 +21,7 @@ export default class Filter {
   getTemplate() {
     return `
       <section class="main__filter filter container"> 
-        ${this._filters.map(({title, count}) => `
+        ${this._filtres.map(({title, count}) => `
           <input
             type="radio"
             id="filter__${title}"

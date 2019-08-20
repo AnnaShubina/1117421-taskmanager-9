@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 export default class Sorting {
   constructor() {
     this._element = null;
