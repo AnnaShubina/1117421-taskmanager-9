@@ -11,6 +11,10 @@ export default class Sorting {
     return this._element;
   }
   
+  removeElement() {
+    this._element = null;
+  }
+  
   getTemplate() {
     return `
       <div class="board__filter-list">

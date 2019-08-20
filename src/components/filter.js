@@ -12,6 +12,10 @@ export default class Filter {
     return this._element;
   }
 
+  removeElement() {
+    this._element = null;
+  }
+
   getTemplate() {
     return `
       <section class="main__filter filter container"> 
