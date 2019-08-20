@@ -16,7 +16,7 @@ export default class MainMenu {
   removeElement() {
     this._element = null;
   }
-  
+
   getTemplate() {
     return `
       <section class="control__btn-wrap">

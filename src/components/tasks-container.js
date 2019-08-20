@@ -16,7 +16,7 @@ export default class TaskContainer {
   removeElement() {
     this._element = null;
   }
-  
+
   getTemplate() {
     return `
       <section class="board container">

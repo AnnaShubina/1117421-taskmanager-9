@@ -8,26 +8,25 @@ import Task from './components/task.js';
 import LoadMore from './components/load-more.js';
 import filterMocks from './mocks/filter.js';
 import taskMocks from './mocks/task.js';
-import {Position, render} from './utils.js'
+import {Position, render} from './utils.js';
 const TASK_COUNT = 8;
 
 const mainContainer = document.querySelector(`.main`);
 const menuContainer = document.querySelector(`.main__control`);
-const menu = new Menu;
-const search = new Search;
+const menu = new Menu();
+const search = new Search();
 const filter = new Filter(filterMocks);
-const board = new TasksContainer;
-const sorting = new Sorting;
-const loadBtn = new LoadMore;
+const board = new TasksContainer();
+const sorting = new Sorting();
+const loadBtn = new LoadMore();
 
 render(menuContainer, menu.getElement(), Position.BEFOREEND);
 render(mainContainer, search.getElement(), Position.BEFOREEND);
 render(mainContainer, filter.getElement(), Position.BEFOREEND);
 render(mainContainer, board.getElement(), Position.BEFOREEND);
+render(board.getElement(), sorting.getElement(), Position.AFTERBEGIN);
 
 const tasksContainer = document.querySelector(`.board__tasks`);
-const tasksWrap = document.querySelector(`.board`);
-render(tasksWrap, sorting.getElement(), Position.AFTERBEGIN);
 
 const renderTask = (taskMock) => {
   const task = new Task(taskMock);
@@ -76,9 +75,9 @@ renderTasks(taskMocks, 0, TASK_COUNT);
 let renderedTasks = TASK_COUNT;
 
 if (taskMocks.length > renderedTasks) {
-  render(tasksWrap, loadBtn.getElement(), Position.BEFOREEND);
+  render(board.getElement(), loadBtn.getElement(), Position.BEFOREEND);
   const loadButton = mainContainer.querySelector(`.load-more`);
-  loadButton.addEventListener(`click`, () => {
+  loadBtn.getElement().addEventListener(`click`, () => {
     renderTasks(taskMocks, renderedTasks, renderedTasks + TASK_COUNT);
     renderedTasks = TASK_COUNT + renderedTasks;
     if (renderedTasks >= taskMocks.length) {

@@ -16,7 +16,7 @@ export default class Search {
   removeElement() {
     this._element = null;
   }
-  
+
   getTemplate() {
     return `
       <section class="main__search search container">
