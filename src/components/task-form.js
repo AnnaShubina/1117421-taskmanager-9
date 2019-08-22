@@ -87,6 +87,7 @@ export default class TaskForm {
                           id="repeat-${day}-4"
                           name="repeat"
                           value="${day}"
+                          ${this._repeatingDays[day] ? `checked` : ``}
                         />
                         <label class="card__repeat-day" for="repeat-${day}-4"
                           >${day}</label
