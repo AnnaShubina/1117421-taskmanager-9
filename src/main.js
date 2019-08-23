@@ -10,6 +10,7 @@ import filterMocks from './mocks/filter.js';
 import taskMocks from './mocks/task.js';
 import {Position, render} from './utils.js';
 const TASK_COUNT = 8;
+const isTasksExist = taskMocks.length && !taskMocks.filter(({isArchive}) => isArchive).length;
 
 const mainContainer = document.querySelector(`.main`);
 const menuContainer = document.querySelector(`.main__control`);
@@ -24,7 +25,6 @@ render(menuContainer, menu.getElement(), Position.BEFOREEND);
 render(mainContainer, search.getElement(), Position.BEFOREEND);
 render(mainContainer, filter.getElement(), Position.BEFOREEND);
 render(mainContainer, board.getElement(), Position.BEFOREEND);
-render(board.getElement(), sorting.getElement(), Position.AFTERBEGIN);
 
 const tasksContainer = document.querySelector(`.board__tasks`);
 
@@ -70,18 +70,27 @@ const renderTasks = (taskItems, from, to) => {
   taskItems.slice(from, to).forEach((task) => renderTask(task));
 };
 
-renderTasks(taskMocks, 0, TASK_COUNT);
+if (isTasksExist) {
+  render(board.getElement(), sorting.getElement(), Position.AFTERBEGIN);
+  renderTasks(taskMocks, 0, TASK_COUNT);
 
-let renderedTasks = TASK_COUNT;
+  let renderedTasks = TASK_COUNT;
 
-if (taskMocks.length > renderedTasks) {
-  render(board.getElement(), loadBtn.getElement(), Position.BEFOREEND);
-  const loadButton = mainContainer.querySelector(`.load-more`);
-  loadBtn.getElement().addEventListener(`click`, () => {
-    renderTasks(taskMocks, renderedTasks, renderedTasks + TASK_COUNT);
-    renderedTasks = TASK_COUNT + renderedTasks;
-    if (renderedTasks >= taskMocks.length) {
-      loadButton.style.opacity = `0`;
-    }
-  });
+  if (taskMocks.length > renderedTasks) {
+    render(board.getElement(), loadBtn.getElement(), Position.BEFOREEND);
+    const loadButton = mainContainer.querySelector(`.load-more`);
+    loadBtn.getElement().addEventListener(`click`, () => {
+      renderTasks(taskMocks, renderedTasks, renderedTasks + TASK_COUNT);
+      renderedTasks = TASK_COUNT + renderedTasks;
+      if (renderedTasks >= taskMocks.length) {
+        loadButton.style.opacity = `0`;
+      }
+    });
+  }
+} else {
+  board.getElement().innerHTML = `
+    <p class="board__no-tasks">
+      Congratulations, all tasks were completed! To create a new click on
+      «add new task» button.
+    </p>`;
 }
