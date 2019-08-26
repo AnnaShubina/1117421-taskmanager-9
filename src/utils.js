@@ -3,6 +3,11 @@ const Position = {
   BEFOREEND: `beforeend`
 };
 
+const KeyCode = {
+  ESCAPE: `Escape`,
+  ESC: `Esc`
+};
+
 const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
@@ -26,4 +31,4 @@ const unrender = (element) => {
   }
 };
 
-export {Position, createElement, render, unrender};
+export {Position, KeyCode, createElement, render, unrender};

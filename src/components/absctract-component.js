@@ -1,6 +1,6 @@
 import {createElement} from '../utils.js';
 
-export default class TaskContainer {
+export default class AbstractComponent {
   constructor() {
     this._element = null;
   }
@@ -18,10 +18,6 @@ export default class TaskContainer {
   }
 
   getTemplate() {
-    return `
-      <section class="board container">
-        <div class="board__tasks">
-        </div>
-      </section>`.trim();
+    throw Error(`Abstract method not implemented`);
   }
 }
