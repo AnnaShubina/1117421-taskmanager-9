@@ -4,7 +4,7 @@ import TaskForm from '../components/task-form.js';
 import Task from '../components/task.js';
 import Sorting from '../components/sorting.js';
 import LoadMore from '../components/load-more.js';
-import {Position, render} from '../utils.js';
+import {Position, KeyCode, render} from '../utils.js';
 
 export default class BoardController {
   constructor(container, tasks) {
@@ -21,21 +21,9 @@ export default class BoardController {
     const isTasksExist = this._tasks.length && !this._tasks.filter(({isArchive}) => isArchive).length;
 
     if (isTasksExist) {
-      render(this._container, this._board.getElement(), Position.BEFOREEND);
-      render(this._board.getElement(), this._taskList.getElement(), Position.BEFOREEND);
-      render(this._board.getElement(), this._sorting.getElement(), Position.AFTERBEGIN);
-      this._renderTasks(this._tasks, 0, TASK_COUNT);
-
-      if (this._tasks.length > TASK_COUNT) {
-        this._renderLoadBtn(TASK_COUNT);
-      }
-
+      this._renderBoard(TASK_COUNT);
     } else {
-      this._board.getElement().innerHTML = `
-        <p class="board__no-tasks">
-          Congratulations, all tasks were completed! To create a new click on
-          «add new task» button.
-        </p>`;
+      this._renderEmptyMessage();
     }
   }
 
@@ -48,7 +36,7 @@ export default class BoardController {
     const taskEdit = new TaskForm(taskMock);
 
     const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
+      if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
         this._taskList.getElement().replaceChild(task.getElement(), taskEdit.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
@@ -81,6 +69,17 @@ export default class BoardController {
     render(this._taskList.getElement(), task.getElement(), Position.BEFOREEND);
   }
 
+  _renderBoard(count) {
+    render(this._container, this._board.getElement(), Position.BEFOREEND);
+    render(this._board.getElement(), this._taskList.getElement(), Position.BEFOREEND);
+    render(this._board.getElement(), this._sorting.getElement(), Position.AFTERBEGIN);
+    this._renderTasks(this._tasks, 0, count);
+
+    if (this._tasks.length > count) {
+      this._renderLoadBtn(count);
+    }
+  }
+
   _renderLoadBtn(count) {
     let renderedTasks = count;
     render(this._board.getElement(), this._loadBtn.getElement(), Position.BEFOREEND);
@@ -91,5 +90,13 @@ export default class BoardController {
         this._loadBtn.getElement().style.opacity = `0`;
       }
     });
+  }
+
+  _renderEmptyMessage() {
+    this._board.getElement().innerHTML = `
+      <p class="board__no-tasks">
+        Congratulations, all tasks were completed! To create a new click on
+        «add new task» button.
+      </p>`;
   }
 }
