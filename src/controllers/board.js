@@ -4,10 +4,11 @@ import TaskForm from '../components/task-form.js';
 import Task from '../components/task.js';
 import Sorting from '../components/sorting.js';
 import LoadMore from '../components/load-more.js';
-import {Position, KeyCode, render} from '../utils.js';
+import {Position, KeyCode, render, unrender} from '../utils.js';
 
 export default class BoardController {
   constructor(container, tasks) {
+    this._TASK_COUNT = 8;
     this._container = container;
     this._tasks = tasks;
     this._board = new Board();
@@ -17,11 +18,10 @@ export default class BoardController {
   }
 
   init() {
-    const TASK_COUNT = 8;
     const isTasksExist = this._tasks.length && !this._tasks.filter(({isArchive}) => isArchive).length;
 
     if (isTasksExist) {
-      this._renderBoard(TASK_COUNT);
+      this._renderBoard(this._tasks, this._TASK_COUNT);
     } else {
       this._renderEmptyMessage();
     }
@@ -69,27 +69,56 @@ export default class BoardController {
     render(this._taskList.getElement(), task.getElement(), Position.BEFOREEND);
   }
 
-  _renderBoard(count) {
+  _renderBoard(tasks, count) {
     render(this._container, this._board.getElement(), Position.BEFOREEND);
     render(this._board.getElement(), this._taskList.getElement(), Position.BEFOREEND);
     render(this._board.getElement(), this._sorting.getElement(), Position.AFTERBEGIN);
-    this._renderTasks(this._tasks, 0, count);
+    this._renderTasks(tasks, 0, count);
 
-    if (this._tasks.length > count) {
-      this._renderLoadBtn(count);
+    if (tasks.length > count) {
+      this._renderLoadBtn(tasks, count);
     }
+
+    this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
   }
 
-  _renderLoadBtn(count) {
+  _renderLoadBtn(tasks, count) {
     let renderedTasks = count;
     render(this._board.getElement(), this._loadBtn.getElement(), Position.BEFOREEND);
     this._loadBtn.getElement().addEventListener(`click`, () => {
-      this._renderTasks(this._tasks, renderedTasks, renderedTasks + count);
+      this._renderTasks(tasks, renderedTasks, renderedTasks + count);
       renderedTasks = count + renderedTasks;
-      if (renderedTasks >= this._tasks.length) {
+      if (renderedTasks >= tasks.length) {
         this._loadBtn.getElement().style.opacity = `0`;
       }
     });
+  }
+
+  _onSortLinkClick(evt) {
+    evt.preventDefault();
+
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
+
+    unrender(this._taskList.getElement());
+    unrender(this._loadBtn.getElement());
+    this._taskList.removeElement();
+    this._loadBtn.removeElement();
+
+    switch (evt.target.dataset.sortType) {
+      case `date-up`:
+        const sortedByDateUpTasks = this._tasks.slice().sort((a, b) => a.dueDate - b.dueDate);
+        this._renderBoard(sortedByDateUpTasks, this._TASK_COUNT);
+        break;
+      case `date-down`:
+        const sortedByDateDownTasks = this._tasks.slice().sort((a, b) => b.dueDate - a.dueDate);
+        this._renderBoard(sortedByDateDownTasks, this._TASK_COUNT);
+        break;
+      case `default`:
+        this._renderBoard(this._tasks, this._TASK_COUNT);
+        break;
+    }
   }
 
   _renderEmptyMessage() {
