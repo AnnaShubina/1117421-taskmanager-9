@@ -5,7 +5,8 @@ const Position = {
 
 const KeyCode = {
   ESCAPE: `Escape`,
-  ESC: `Esc`
+  ESC: `Esc`,
+  ENTER: `Enter`
 };
 
 const createElement = (template) => {
