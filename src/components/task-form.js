@@ -60,7 +60,7 @@ export default class TaskForm extends AbstractComponent {
                         type="text"
                         placeholder=""
                         name="date"
-                        value="${this._dueDate ? `${new Date(this._dueDate).toDateString()} ${new Date(this._dueDate).getHours()}:${new Date(this._dueDate).getMinutes()}` : ``}"
+                        value="${this._dueDate ? `${new Date(this._dueDate).toDateString()}` : ``}"
                       />
                     </label>
                   </fieldset>
@@ -260,13 +260,13 @@ export default class TaskForm extends AbstractComponent {
     this.getElement()
     .querySelectorAll(`input[name='color']`).forEach((element) => {
       element.addEventListener(`click`, () => {
-        this.getElement().querySelectorAll(`input[name='color']`).forEach((item) => {
-          if (item.checked) {
-            this.getElement().classList.add(`card--${item.value}`);
-          } else {
-            this.getElement().classList.remove(`card--${item.value}`);
+        const classNames = this.getElement().classList;
+        classNames.forEach((name) => {
+          if (/card--.*[^edit]/.test(name)) {
+            this.getElement().classList.remove(name);
           }
         });
+        this.getElement().classList.add(`card--${element.value}`);
       });
     });
   }

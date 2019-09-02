@@ -42,18 +42,6 @@ export default class TaskController {
         this._addToFavorite();
       });
 
-    this._taskEdit.getElement()
-      .querySelector(`.card__btn--archive`)
-      .addEventListener(`click`, () => {
-        this._addToArchive();
-      });
-
-    this._taskEdit.getElement()
-      .querySelector(`.card__btn--favorites`)
-      .addEventListener(`click`, () => {
-        this._addToFavorite();
-      });
-
     this._taskEdit.getElement().querySelector(`#color-${this._data.color}-4`).checked = true;
 
     this._taskEdit.getElement().querySelector(`textarea`)
@@ -104,7 +92,7 @@ export default class TaskController {
   }
 
   _addToArchive() {
-    const newData = this._data;
+    const newData = Object.assign({}, this._data);
     if (newData.isArchive) {
       newData.isArchive = false;
     } else {
@@ -114,7 +102,7 @@ export default class TaskController {
   }
 
   _addToFavorite() {
-    const newData = this._data;
+    const newData = Object.assign({}, this._data);
     if (newData.isFavorite) {
       newData.isFavorite = false;
     } else {
