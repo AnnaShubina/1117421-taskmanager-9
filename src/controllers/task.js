@@ -1,6 +1,9 @@
 import TaskForm from '../components/task-form.js';
 import Task from '../components/task.js';
 import {Position, KeyCode, render} from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 
 export default class TaskController {
   constructor(container, data, onDataChange, onChangeView) {
@@ -15,6 +18,12 @@ export default class TaskController {
   }
 
   create() {
+    flatpickr(this._taskEdit.getElement().querySelector(`.card__date`), {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._data.dueDate,
+    });
+
     const onEscKeyDown = (evt) => {
       if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
         this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
