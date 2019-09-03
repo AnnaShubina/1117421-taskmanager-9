@@ -1,10 +1,9 @@
 import Board from '../components/board.js';
 import TaskList from '../components/task-list.js';
-import TaskForm from '../components/task-form.js';
-import Task from '../components/task.js';
 import Sorting from '../components/sorting.js';
 import LoadMore from '../components/load-more.js';
-import {Position, KeyCode, render, unrender} from '../utils.js';
+import TaskController from '../controllers/task.js';
+import {Position, render, unrender} from '../utils.js';
 
 export default class BoardController {
   constructor(container, tasks) {
@@ -15,10 +14,15 @@ export default class BoardController {
     this._taskList = new TaskList();
     this._sorting = new Sorting();
     this._loadBtn = new LoadMore();
+    this._subscriptions = [];
+    this._onChangeView = this._onChangeView.bind(this);
+    this._onDataChange = this._onDataChange.bind(this);
   }
 
   init() {
-    const isTasksExist = this._tasks.length && !this._tasks.filter(({isArchive}) => isArchive).length;
+    const isTasksExist = this._tasks.length && !this._tasks.filter(({
+      isArchive
+    }) => isArchive).length;
 
     if (isTasksExist) {
       this._renderBoard(this._tasks, this._TASK_COUNT);
@@ -32,44 +36,22 @@ export default class BoardController {
   }
 
   _renderTask(taskMock) {
-    const task = new Task(taskMock);
-    const taskEdit = new TaskForm(taskMock);
+    const taskController = new TaskController(this._taskList, taskMock, this._onDataChange, this._onChangeView);
+    this._subscriptions.push(taskController.setDefaultView.bind(taskController));
+  }
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
-        this._taskList.getElement().replaceChild(task.getElement(), taskEdit.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
+  _onDataChange(newData, oldData) {
+    this._tasks[this._tasks.findIndex((it) => it === oldData)] = newData;
+    this._renderBoard(this._tasks, this._TASK_COUNT);
+  }
 
-    task.getElement()
-      .querySelector(`.card__btn--edit`)
-      .addEventListener(`click`, () => {
-        this._taskList.getElement().replaceChild(taskEdit.getElement(), task.getElement());
-        document.addEventListener(`keydown`, onEscKeyDown);
-      });
-
-    taskEdit.getElement().querySelector(`textarea`)
-      .addEventListener(`focus`, () => {
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      });
-
-    taskEdit.getElement().querySelector(`textarea`)
-      .addEventListener(`blur`, () => {
-        document.addEventListener(`keydown`, onEscKeyDown);
-      });
-
-    taskEdit.getElement()
-      .querySelector(`form`)
-      .addEventListener(`submit`, () => {
-        this._taskList.getElement().replaceChild(task.getElement(), taskEdit.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      });
-
-    render(this._taskList.getElement(), task.getElement(), Position.BEFOREEND);
+  _onChangeView() {
+    this._subscriptions.forEach((it) => it());
   }
 
   _renderBoard(tasks, count) {
+    this._clearBoard();
+
     render(this._container, this._board.getElement(), Position.BEFOREEND);
     render(this._board.getElement(), this._taskList.getElement(), Position.BEFOREEND);
     render(this._board.getElement(), this._sorting.getElement(), Position.AFTERBEGIN);
@@ -101,10 +83,7 @@ export default class BoardController {
       return;
     }
 
-    unrender(this._taskList.getElement());
-    unrender(this._loadBtn.getElement());
-    this._taskList.removeElement();
-    this._loadBtn.removeElement();
+    this._clearBoard();
 
     switch (evt.target.dataset.sortType) {
       case `date-up`:
@@ -127,5 +106,12 @@ export default class BoardController {
         Congratulations, all tasks were completed! To create a new click on
         «add new task» button.
       </p>`;
+  }
+
+  _clearBoard() {
+    unrender(this._taskList.getElement());
+    unrender(this._loadBtn.getElement());
+    this._taskList.removeElement();
+    this._loadBtn.removeElement();
   }
 }
