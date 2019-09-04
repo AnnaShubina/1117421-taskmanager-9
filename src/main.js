@@ -13,15 +13,15 @@ const menu = new Menu();
 const search = new Search();
 const filter = new Filter(filterMocks);
 const statistics = new Statistics();
-const boardController = new BoardController(mainContainer, taskMocks);
 
 render(menuContainer, menu.getElement(), Position.BEFOREEND);
 render(mainContainer, search.getElement(), Position.BEFOREEND);
 render(mainContainer, filter.getElement(), Position.BEFOREEND);
 render(mainContainer, statistics.getElement(), Position.BEFOREEND);
-statistics.getElement().classList.add(`visually-hidden`);
 
-boardController.init();
+const boardController = new BoardController(mainContainer);
+statistics.getElement().classList.add(`visually-hidden`);
+boardController.show(taskMocks);
 
 menu.getElement().addEventListener(`change`, (evt) => {
   evt.preventDefault();
@@ -37,7 +37,7 @@ menu.getElement().addEventListener(`change`, (evt) => {
   switch (evt.target.id) {
     case tasksId:
       statistics.getElement().classList.add(`visually-hidden`);
-      boardController.show();
+      boardController.show(taskMocks);
       break;
     case statisticId:
       boardController.hide();

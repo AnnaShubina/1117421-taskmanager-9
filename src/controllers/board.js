@@ -2,119 +2,84 @@ import Board from '../components/board.js';
 import TaskList from '../components/task-list.js';
 import Sorting from '../components/sorting.js';
 import LoadMore from '../components/load-more.js';
-import TaskController from '../controllers/task.js';
-import {Position, Mode, render, unrender} from '../utils.js';
-const TaskControllerMode = Mode;
+import TaskListController from '../controllers/task-list.js';
+import {Position, render, unrender} from '../utils.js';
 
 export default class BoardController {
-  constructor(container, tasks) {
+  constructor(container) {
     this._TASK_COUNT = 8;
     this._container = container;
-    this._tasks = tasks;
+    this._tasks = [];
     this._board = new Board();
     this._taskList = new TaskList();
     this._sorting = new Sorting();
     this._loadBtn = new LoadMore();
-    this._subscriptions = [];
-    this._onChangeView = this._onChangeView.bind(this);
-    this._onDataChange = this._onDataChange.bind(this);
+    this._taskListController = new TaskListController(this._taskList, this._onDataChange.bind(this));
+
+    this._init();
+
   }
 
-  init() {
-    const isTasksExist = this._tasks.length && !this._tasks.filter(({
-      isArchive
-    }) => isArchive).length;
-
-    if (isTasksExist) {
-      this._renderBoard(this._tasks, this._TASK_COUNT);
-    } else {
-      this._renderEmptyMessage();
-    }
+  _init() {
+    render(this._container, this._board.getElement(), Position.BEFOREEND);
+    render(this._board.getElement(), this._sorting.getElement(), Position.AFTERBEGIN);
+    render(this._board.getElement(), this._taskList.getElement(), Position.BEFOREEND);
+    this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
   }
 
   hide() {
     this._board.getElement().classList.add(`visually-hidden`);
   }
 
-  show() {
+  show(tasks) {
+    if (tasks !== this._tasks) {
+      this._setTasks(tasks);
+    }
+
     this._board.getElement().classList.remove(`visually-hidden`);
   }
 
   createTask() {
-    if (this._creatingTask) {
-      return;
-    }
-
-    const defaultTask = {
-      description: ``,
-      dueDate: new Date(),
-      tags: new Set(),
-      color: ``,
-      repeatingDays: {
-        'mo': false,
-        'tu': false,
-        'we': false,
-        'th': false,
-        'fr': false,
-        'sa': false,
-        'su': false,
-      },
-      isFavorite: false,
-      isArchive: false,
-    };
-
-    this._creatingTask = new TaskController(this._taskList, defaultTask, TaskControllerMode.ADDING, this._onDataChange, this._onChangeView);
+    this._taskListController.createTask();
   }
 
-  _renderTasks(taskItems, from, to) {
-    taskItems.slice(from, to).forEach((task) => this._renderTask(task));
-  }
+  _setTasks(tasks) {
+    this._tasks = tasks;
 
-  _renderTask(taskMock) {
-    const taskController = new TaskController(this._taskList, taskMock, TaskControllerMode.DEFAULT, this._onDataChange, this._onChangeView);
-    this._subscriptions.push(taskController.setDefaultView.bind(taskController));
-  }
+    const isTasksExist = this._tasks.length && !this._tasks.filter(({
+      isArchive
+    }) => isArchive).length;
 
-  _onDataChange(newData, oldData) {
-    const index = this._tasks.findIndex((task) => task === oldData);
-    let showedTasks = this._TASK_COUNT;
-    if (newData === null) {
-      this._tasks = [...this._tasks.slice(0, index), ...this._tasks.slice(index + 1)];
-      showedTasks = Math.min(this._TASK_COUNT, this._tasks.length);
-    } else if (oldData === null) {
-      this._tasks = [newData, ...this._tasks];
+    if (isTasksExist) {
+      this._renderBoard();
     } else {
-      this._tasks[index] = newData;
+      this._renderEmptyMessage();
     }
-
-    this._renderBoard(this._tasks, showedTasks);
   }
 
-  _onChangeView() {
-    this._subscriptions.forEach((it) => it());
+  _onDataChange(tasks) {
+    this._tasks = tasks;
+
+    this._renderBoard();
   }
 
-  _renderBoard(tasks, count) {
+  _renderBoard() {
     this._clearBoard();
 
-    render(this._container, this._board.getElement(), Position.BEFOREEND);
     render(this._board.getElement(), this._taskList.getElement(), Position.BEFOREEND);
-    render(this._board.getElement(), this._sorting.getElement(), Position.AFTERBEGIN);
-    this._renderTasks(tasks, 0, count);
+    this._taskListController.setTasks(this._tasks.slice(0, this._TASK_COUNT));
 
-    if (tasks.length > count) {
-      this._renderLoadBtn(tasks, count);
+    if (this._tasks.length > this._TASK_COUNT) {
+      this._renderLoadBtn();
     }
-
-    this._sorting.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
   }
 
-  _renderLoadBtn(tasks, count) {
-    let renderedTasks = count;
+  _renderLoadBtn() {
+    let renderedTasks = this._TASK_COUNT;
     render(this._board.getElement(), this._loadBtn.getElement(), Position.BEFOREEND);
     this._loadBtn.getElement().addEventListener(`click`, () => {
-      this._renderTasks(tasks, renderedTasks, renderedTasks + count);
-      renderedTasks = count + renderedTasks;
+      this._taskListController.addTasks(this._tasks.slice(renderedTasks, renderedTasks + this._TASK_COUNT));
+      renderedTasks = this._TASK_COUNT + renderedTasks;
       if (renderedTasks >= tasks.length) {
         this._loadBtn.getElement().style.opacity = `0`;
       }
