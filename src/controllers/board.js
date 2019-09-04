@@ -41,6 +41,10 @@ export default class BoardController {
   }
 
   createTask() {
+    if (this._creatingTask) {
+      return;
+    }
+
     const defaultTask = {
       description: ``,
       dueDate: new Date(),
@@ -59,15 +63,15 @@ export default class BoardController {
       isArchive: false,
     };
 
-    this._renderTask(defaultTask, TaskControllerMode.ADDING);
+    this._creatingTask = new TaskController(this._taskList, defaultTask, TaskControllerMode.ADDING, this._onDataChange, this._onChangeView);
   }
 
   _renderTasks(taskItems, from, to) {
-    taskItems.slice(from, to).forEach((task) => this._renderTask(task, TaskControllerMode.DEFAULT));
+    taskItems.slice(from, to).forEach((task) => this._renderTask(task));
   }
 
-  _renderTask(taskMock, mode) {
-    const taskController = new TaskController(this._taskList, taskMock, mode, this._onDataChange, this._onChangeView);
+  _renderTask(taskMock) {
+    const taskController = new TaskController(this._taskList, taskMock, TaskControllerMode.DEFAULT, this._onDataChange, this._onChangeView);
     this._subscriptions.push(taskController.setDefaultView.bind(taskController));
   }
 
