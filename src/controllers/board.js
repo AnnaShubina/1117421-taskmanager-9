@@ -3,7 +3,8 @@ import TaskList from '../components/task-list.js';
 import Sorting from '../components/sorting.js';
 import LoadMore from '../components/load-more.js';
 import TaskController from '../controllers/task.js';
-import {Position, render, unrender} from '../utils.js';
+import {Position, Mode, render, unrender} from '../utils.js';
+const TaskControllerMode = Mode;
 
 export default class BoardController {
   constructor(container, tasks) {
@@ -39,18 +40,50 @@ export default class BoardController {
     this._board.getElement().classList.remove(`visually-hidden`);
   }
 
-  _renderTasks(taskItems, from, to) {
-    taskItems.slice(from, to).forEach((task) => this._renderTask(task));
+  createTask() {
+    const defaultTask = {
+      description: ``,
+      dueDate: new Date(),
+      tags: new Set(),
+      color: ``,
+      repeatingDays: {
+        'mo': false,
+        'tu': false,
+        'we': false,
+        'th': false,
+        'fr': false,
+        'sa': false,
+        'su': false,
+      },
+      isFavorite: false,
+      isArchive: false,
+    };
+
+    this._renderTask(defaultTask, TaskControllerMode.ADDING);
   }
 
-  _renderTask(taskMock) {
-    const taskController = new TaskController(this._taskList, taskMock, this._onDataChange, this._onChangeView);
+  _renderTasks(taskItems, from, to) {
+    taskItems.slice(from, to).forEach((task) => this._renderTask(task, TaskControllerMode.DEFAULT));
+  }
+
+  _renderTask(taskMock, mode) {
+    const taskController = new TaskController(this._taskList, taskMock, mode, this._onDataChange, this._onChangeView);
     this._subscriptions.push(taskController.setDefaultView.bind(taskController));
   }
 
   _onDataChange(newData, oldData) {
-    this._tasks[this._tasks.findIndex((it) => it === oldData)] = newData;
-    this._renderBoard(this._tasks, this._TASK_COUNT);
+    const index = this._tasks.findIndex((task) => task === oldData);
+    let showedTasks = this._TASK_COUNT;
+    if (newData === null) {
+      this._tasks = [...this._tasks.slice(0, index), ...this._tasks.slice(index + 1)];
+      showedTasks = Math.min(this._TASK_COUNT, this._tasks.length);
+    } else if (oldData === null) {
+      this._tasks = [newData, ...this._tasks];
+    } else {
+      this._tasks[index] = newData;
+    }
+
+    this._renderBoard(this._tasks, showedTasks);
   }
 
   _onChangeView() {

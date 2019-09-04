@@ -30,14 +30,22 @@ menu.getElement().addEventListener(`change`, (evt) => {
     return;
   }
 
+  const tasksId = `control__task`;
+  const statisticId = `control__statistic`;
+  const newTaskId = `control__new-task`;
+
   switch (evt.target.id) {
-    case `control__task`:
+    case tasksId:
       statistics.getElement().classList.add(`visually-hidden`);
       boardController.show();
       break;
-    case `control__statistic`:
+    case statisticId:
       boardController.hide();
       statistics.getElement().classList.remove(`visually-hidden`);
+      break;
+    case newTaskId:
+      boardController.createTask();
+      menu.getElement().querySelector(`#${newTaskId}`).checked = true;
       break;
   }
 });

@@ -9,6 +9,11 @@ const KeyCode = {
   ENTER: `Enter`
 };
 
+const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
+};
+
 const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
@@ -32,4 +37,4 @@ const unrender = (element) => {
   }
 };
 
-export {Position, KeyCode, createElement, render, unrender};
+export {Position, KeyCode, Mode, createElement, render, unrender};
