@@ -31,6 +31,14 @@ export default class BoardController {
     }
   }
 
+  hide() {
+    this._board.getElement().classList.add(`visually-hidden`);
+  }
+
+  show() {
+    this._board.getElement().classList.remove(`visually-hidden`);
+  }
+
   _renderTasks(taskItems, from, to) {
     taskItems.slice(from, to).forEach((task) => this._renderTask(task));
   }
