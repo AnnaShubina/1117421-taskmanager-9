@@ -1,6 +1,8 @@
 const Position = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  AFTER: `after`,
+  BEFORE: `before`,
 };
 
 const KeyCode = {
@@ -27,6 +29,12 @@ const render = (container, element, place) => {
       break;
     case Position.BEFOREEND:
       container.append(element);
+      break;
+    case Position.AFTER:
+      container.after(element);
+      break;
+    case Position.BEFORE:
+      container.before(element);
       break;
   }
 };

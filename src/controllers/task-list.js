@@ -1,5 +1,8 @@
 import TaskController from '../controllers/task.js';
-import {Mode as TaskControllerMode} from '../utils.js';
+import LoadMore from '../components/load-more.js';
+import {Mode as TaskControllerMode, Position, render, unrender} from '../utils.js';
+
+const TASK_COUNT_SHOW = 8;
 
 export default class TaskListController {
   constructor(container, onDataChange) {
@@ -8,6 +11,8 @@ export default class TaskListController {
     this._creatingTask = null;
     this._subscriptions = [];
     this._tasks = [];
+    this._loadBtn = new LoadMore();
+    this._showedTasks = TASK_COUNT_SHOW;
     this._onChangeView = this._onChangeView.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
   }
@@ -15,9 +20,14 @@ export default class TaskListController {
   setTasks(tasks) {
     this._tasks = tasks;
     this._subscriptions = [];
-
     this._container.innerHTML = ``;
-    this._tasks.forEach((task) => this._renderTask(task));
+    this._tasks.slice(0, this._showedTasks).forEach((task) => this._renderTask(task));
+
+    if (tasks.length > this._showedTasks) {
+      this._renderLoadBtn(tasks);
+    } else {
+      this._deleteLoadMoreBtn();
+    }
   }
 
   addTasks(tasks) {
@@ -47,15 +57,30 @@ export default class TaskListController {
       isFavorite: false,
       isArchive: false,
     };
-    this._creatingTask = new TaskController(this._container, defaultTask, TaskControllerMode.ADDING, this._onChangeView, (...args) => {
-      this._creatingTask = null;
-      this._onDataChange(...args);
-    });
+
+    this._creatingTask = new TaskController(this._container, defaultTask, TaskControllerMode.ADDING, this._onChangeView, this._onDataChange);
   }
 
   _renderTask(task) {
     const taskController = new TaskController(this._container, task, TaskControllerMode.DEFAULT, this._onChangeView, this._onDataChange);
     this._subscriptions.push(taskController.setDefaultView.bind(taskController));
+  }
+
+  _renderLoadBtn(tasks) {
+    render(this._container, this._loadBtn.getElement(), Position.AFTER);
+    this._loadBtn.getElement().addEventListener(`click`, () => {
+      console.log(tasks)
+      this.addTasks(tasks.slice(this._showedTasks, this._showedTasks + TASK_COUNT_SHOW));
+      this._showedTasks += TASK_COUNT_SHOW;
+      if (this._showedTasks >= tasks.length) {
+        this._deleteLoadMoreBtn();
+      }
+    });
+  }
+
+  _deleteLoadMoreBtn() {
+    unrender(this._loadBtn.getElement());
+    this._loadBtn.removeElement();
   }
 
   _onChangeView() {
@@ -67,7 +92,9 @@ export default class TaskListController {
 
     if (newData === null) {
       this._tasks = [...this._tasks.slice(0, index), ...this._tasks.slice(index + 1)];
+      this._showedTasks = Math.min(this._showedTasks, this._tasks.length);
     } else if (oldData === null) {
+      this._creatingTask = null;
       this._tasks = [newData, ...this._tasks];
     } else {
       this._tasks[index] = newData;

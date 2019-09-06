@@ -6,7 +6,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
 export default class TaskController {
-  constructor(container, data, mode, onDataChange, onChangeView) {
+  constructor(container, data, mode, onChangeView, onDataChange,) {
     this._container = container;
     this._data = data;
     this._taskView = new Task(data);
@@ -35,11 +35,11 @@ export default class TaskController {
     const onEscKeyDown = (evt) => {
       if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
         if (mode === Mode.DEFAULT) {
-          if (this._container.getElement().contains(this._taskEdit.getElement())) {
-            this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+          if (this._container.contains(this._taskEdit.getElement())) {
+            this._container.replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
           }
         } else if (mode === Mode.ADDING) {
-          this._container.getElement().removeChild(currentView.getElement());
+          this._container.removeChild(currentView.getElement());
         }
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
@@ -49,7 +49,7 @@ export default class TaskController {
       .querySelector(`.card__btn--edit`)
       .addEventListener(`click`, () => {
         this._onChangeView();
-        this._container.getElement().replaceChild(this._taskEdit.getElement(), this._taskView.getElement());
+        this._container.replaceChild(this._taskEdit.getElement(), this._taskView.getElement());
         document.addEventListener(`keydown`, onEscKeyDown);
       });
 
@@ -113,12 +113,12 @@ export default class TaskController {
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
 
-    render(this._container.getElement(), currentView.getElement(), renderPosition);
+    render(this._container, currentView.getElement(), renderPosition);
   }
 
   setDefaultView() {
-    if (this._container.getElement().contains(this._taskEdit.getElement())) {
-      this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+    if (this._container.contains(this._taskEdit.getElement())) {
+      this._container.replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
     }
   }
 
