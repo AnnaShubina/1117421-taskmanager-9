@@ -5,14 +5,14 @@ import TaskListController from '../controllers/task-list.js';
 import {Position, render} from '../utils.js';
 
 export default class BoardController {
-  constructor(container, onDataChange) {
+  constructor(container, onFilterChange) {
     this._container = container;
     this._tasks = [];
     this._board = new Board();
     this._taskList = new TaskList();
     this._sorting = new Sorting();
-    this._onDataChangeMain = onDataChange;
-    this._taskListController = new TaskListController(this._taskList.getElement(), this._onDataChange.bind(this));
+    this._onFilterChange = onFilterChange;
+    this._taskListController = new TaskListController(this._taskList.getElement(), this.onDataChange.bind(this));
 
     this._init();
   }
@@ -55,9 +55,14 @@ export default class BoardController {
     }
   }
 
-  _onDataChange(tasks) {
+  onDataChange(tasks) {
     this._tasks = tasks;
     this._renderBoard(this._tasks);
+    this._onFilterChange(tasks);
+  }
+
+  onFilterSwitch(tasks) {
+    this._taskListController.filterTasks(tasks);
   }
 
   _renderBoard(tasks) {

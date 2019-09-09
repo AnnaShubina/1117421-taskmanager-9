@@ -2,7 +2,9 @@ import {Position, render, unrender} from '../utils.js';
 import SearchResult from '../components/search-result.js';
 import SearchResultGroup from '../components/search-result-group.js';
 import SearchResultInfo from '../components/search-result-info.js';
+import SearchNoResult from '../components/search-no-result.js';
 import TaskListController from '../controllers/task-list.js';
+import moment from 'moment';
 
 export default class SearchController {
   constructor(container, search, onBackButtonClick) {
@@ -12,12 +14,10 @@ export default class SearchController {
     this._tasks = [];
 
     this._searchResult = new SearchResult();
+    this._searchNoResult = new SearchNoResult();
     this._searchResultInfo = new SearchResultInfo({});
     this._searchResultGroup = new SearchResultGroup({});
-    this._taskListController = new TaskListController(
-      this._searchResultGroup.getElement().querySelector(`.result__cards`),
-      this._onDataChange.bind(this)
-    );
+    this._taskListController = new TaskListController(this._searchResultGroup.getElement().querySelector(`.result__cards`), this._onDataChange.bind(this));
 
     this._init();
   }
@@ -36,10 +36,25 @@ export default class SearchController {
       });
     this._search.getElement().querySelector(`input`)
       .addEventListener(`keyup`, (evt) => {
-        const {value} = evt.target;
-        const tasks = this._tasks.filter((task) => {
-          return task.description.includes(value);
-        });
+        const {
+          value
+        } = evt.target;
+        const valueSliced = value.slice(1, value.length + 1);
+        let tasks;
+        if (value.startsWith(`#`)) {
+          tasks = this._tasks.filter((task) => {
+            return Array.from(task.tags).includes(valueSliced);
+          });
+        } else if (value.startsWith(`D`)) {
+          tasks = this._tasks.filter((task) => {
+            const date = moment(task.dueDate).format(`DD/MM/YYYY`);
+            return date === valueSliced.replace(/\./g, `/`);
+          });
+        } else {
+          tasks = this._tasks.filter((task) => {
+            return task.description.includes(value);
+          });
+        }
 
         this._showSearchResult(value, tasks);
       });
@@ -64,11 +79,20 @@ export default class SearchController {
       this._searchResultInfo.removeElement();
     }
 
-    this._searchResultInfo = new SearchResultInfo({title: text, count: tasks.length});
-
+    this._searchResultInfo = new SearchResultInfo({
+      title: text,
+      count: tasks.length
+    });
     render(this._searchResultGroup.getElement(), this._searchResultInfo.getElement(), Position.AFTERBEGIN);
 
-    this._taskListController.setTasks(tasks);
+    if (tasks.length) {
+      unrender(this._searchNoResult.getElement());
+      this._searchNoResult.removeElement();
+      this._taskListController.setTasks(tasks);
+    } else {
+      render(this._searchResultInfo.getElement(), this._searchNoResult.getElement(), Position.AFTER);
+      this._taskListController.clearTasks();
+    }
   }
 
   _onDataChange(tasks) {

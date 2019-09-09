@@ -21,10 +21,17 @@ export default class TaskListController {
     this._tasks = tasks;
     this._subscriptions = [];
     this._container.innerHTML = ``;
-    this._tasks.slice(0, this._showedTasks).forEach((task) => this._renderTask(task));
+    this._renderTasks(this._tasks.filter(({isArchive}) => !isArchive));
+  }
+
+  _renderTasks(tasks) {
+    if (this._showedTasks > TASK_COUNT_SHOW) {
+      this._showedTasks = TASK_COUNT_SHOW;
+    }
+    tasks.slice(0, this._showedTasks).forEach((task) => this._renderTask(task));
 
     if (tasks.length > this._showedTasks) {
-      this._renderLoadBtn(tasks);
+      this._renderLoadBtn();
     } else {
       this._deleteLoadMoreBtn();
     }
@@ -32,7 +39,17 @@ export default class TaskListController {
 
   addTasks(tasks) {
     tasks.forEach((task) => this._renderTask(task));
-    this._tasks = this._tasks.concat(tasks);
+  }
+
+  clearTasks() {
+    this._container.innerHTML = ``;
+    this._deleteLoadMoreBtn();
+    this._showedTasks = TASK_COUNT_SHOW;
+  }
+
+  filterTasks(tasks) {
+    this.clearTasks();
+    this._renderTasks(tasks);
   }
 
   createTask() {
@@ -66,13 +83,12 @@ export default class TaskListController {
     this._subscriptions.push(taskController.setDefaultView.bind(taskController));
   }
 
-  _renderLoadBtn(tasks) {
+  _renderLoadBtn() {
     render(this._container, this._loadBtn.getElement(), Position.AFTER);
     this._loadBtn.getElement().addEventListener(`click`, () => {
-      console.log(tasks)
-      this.addTasks(tasks.slice(this._showedTasks, this._showedTasks + TASK_COUNT_SHOW));
+      this.addTasks(this._tasks.slice(this._showedTasks, this._showedTasks + TASK_COUNT_SHOW));
       this._showedTasks += TASK_COUNT_SHOW;
-      if (this._showedTasks >= tasks.length) {
+      if (this._showedTasks >= this._tasks.length) {
         this._deleteLoadMoreBtn();
       }
     });
@@ -96,6 +112,7 @@ export default class TaskListController {
     } else if (oldData === null) {
       this._creatingTask = null;
       this._tasks = [newData, ...this._tasks];
+      this._showedTasks = Math.max(this._showedTasks, this._tasks.length);
     } else {
       this._tasks[index] = newData;
     }

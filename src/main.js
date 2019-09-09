@@ -1,29 +1,32 @@
 import Menu from './components/main-menu.js';
 import Search from './components/search.js';
-import Filter from './components/filter.js';
 import Statistics from './components/statistics.js';
-import filterMocks from './mocks/filter.js';
 import taskMocks from './mocks/task.js';
 import BoardController from './controllers/board.js';
 import SearchController from './controllers/search.js';
+import FilterController from './controllers/filter.js';
 import {Position, render} from './utils.js';
 
 const mainContainer = document.querySelector(`.main`);
 const menuContainer = document.querySelector(`.main__control`);
 const menu = new Menu();
 const search = new Search();
-const filter = new Filter(filterMocks);
 const statistics = new Statistics();
-const onDataChange = (tasks) => {
-  taskMocks = tasks;
+const onFilterSwitch = (tasks) => {
+  boardController.onFilterSwitch(tasks);
+};
+const onFilterChange = (tasks) => {
+  filterController.filterChange(tasks);
 };
 
 render(menuContainer, menu.getElement(), Position.BEFOREEND);
 render(mainContainer, search.getElement(), Position.BEFOREEND);
-render(mainContainer, filter.getElement(), Position.BEFOREEND);
+
+const filterController = new FilterController(search.getElement(), taskMocks, onFilterSwitch);
+
 render(mainContainer, statistics.getElement(), Position.BEFOREEND);
 
-const boardController = new BoardController(mainContainer, onDataChange);
+const boardController = new BoardController(mainContainer, onFilterChange);
 const onSearchBackButtonClick = () => {
   statistics.getElement().classList.add(`visually-hidden`);
   searchController.hide();
@@ -58,7 +61,7 @@ menu.getElement().addEventListener(`change`, (evt) => {
     case newTaskId:
       boardController.createTask();
       boardController.show();
-      menu.getElement().querySelector(`#${newTaskId}`).checked = true;
+      menu.getElement().querySelector(`#${tasksId}`).checked = true;
       break;
   }
 });
