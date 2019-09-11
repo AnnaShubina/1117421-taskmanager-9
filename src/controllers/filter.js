@@ -6,10 +6,50 @@ export default class FilterController {
   constructor(container, tasks, onFilterSwitch) {
     this._container = container;
     this._tasks = tasks;
-    this._filter = new Filter(this._tasks);
+    this._filter = new Filter(this._getData());
     this._onFilterSwitch = onFilterSwitch;
 
     this.create();
+  }
+
+  _getData() {
+    return [
+      {
+        id: `all`,
+        title: `All`,
+        count: this._tasks.length - this._tasks.filter(({isArchive}) => isArchive).length
+      },
+      {
+        id: `overdue`,
+        title: `Overdue`,
+        count: this._tasks.filter(({dueDate}) => moment(dueDate).isBefore(moment(), `day`)).length
+      },
+      {
+        id: `today`,
+        title: `Today`,
+        count: this._tasks.filter(({dueDate}) => moment(dueDate).isSame(moment(), `day`)).length
+      },
+      {
+        id: `favorites`,
+        title: `Favorites`,
+        count: this._tasks.filter(({isFavorite}) => isFavorite).length
+      },
+      {
+        id: `repeating`,
+        title: `Repeating`,
+        count: this._tasks.filter(({repeatingDays}) => Object.keys(repeatingDays).some((day) => repeatingDays[day])).length
+      },
+      {
+        id: `tags`,
+        title: `Tags`,
+        count: this._tasks.filter(({tags}) => tags.size).length
+      },
+      {
+        id: `archive`,
+        title: `Archive`,
+        count: this._tasks.filter(({isArchive}) => isArchive).length
+      }
+    ];
   }
 
   create() {
@@ -56,8 +96,9 @@ export default class FilterController {
   }
 
   filterChange(tasks) {
+    this._tasks = tasks;
     this._unrender();
-    this._filter.changeCounts(tasks);
+    this._filter.changeData(this._getData());
     this.create();
   }
 }

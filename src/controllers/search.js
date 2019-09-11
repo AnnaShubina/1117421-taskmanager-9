@@ -36,28 +36,36 @@ export default class SearchController {
       });
     this._search.getElement().querySelector(`input`)
       .addEventListener(`keyup`, (evt) => {
-        const {
-          value
-        } = evt.target;
-        const valueSliced = value.slice(1, value.length + 1);
-        let tasks;
-        if (value.startsWith(`#`)) {
-          tasks = this._tasks.filter((task) => {
-            return Array.from(task.tags).includes(valueSliced);
-          });
-        } else if (value.startsWith(`D`)) {
-          tasks = this._tasks.filter((task) => {
-            const date = moment(task.dueDate).format(`DD/MM/YYYY`);
-            return date === valueSliced.replace(/\./g, `/`);
-          });
-        } else {
-          tasks = this._tasks.filter((task) => {
-            return task.description.includes(value);
-          });
-        }
+        const {value} = evt.target;
 
-        this._showSearchResult(value, tasks);
+        if (value === ``) {
+          this._showSearchResult(value, this._tasks);
+        } else if (value.length > 2) {
+          const tasks = this._parseValue(value);
+          this._showSearchResult(value, tasks);
+        }
       });
+  }
+
+  _parseValue(value) {
+    const valueSliced = value.slice(1, value.length + 1);
+    let tasks;
+    if (value.startsWith(`#`)) {
+      tasks = this._tasks.filter((task) => {
+        return Array.from(task.tags).includes(valueSliced);
+      });
+    } else if (value.startsWith(`D`)) {
+      tasks = this._tasks.filter((task) => {
+        const date = moment(task.dueDate).format(`DD/MM/YYYY`);
+        return date === valueSliced.replace(/\./g, `/`);
+      });
+    } else {
+      tasks = this._tasks.filter((task) => {
+        return task.description.includes(value);
+      });
+    }
+
+    return tasks;
   }
 
   hide() {

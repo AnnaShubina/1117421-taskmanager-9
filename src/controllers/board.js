@@ -62,7 +62,7 @@ export default class BoardController {
   }
 
   onFilterSwitch(tasks) {
-    this._taskListController.filterTasks(tasks);
+    this._taskListController.renderFilteredTasks(tasks);
   }
 
   _renderBoard(tasks) {

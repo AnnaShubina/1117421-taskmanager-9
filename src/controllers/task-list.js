@@ -47,7 +47,7 @@ export default class TaskListController {
     this._showedTasks = TASK_COUNT_SHOW;
   }
 
-  filterTasks(tasks) {
+  renderFilteredTasks(tasks) {
     this.clearTasks();
     this._renderTasks(tasks);
   }
