@@ -1,12 +1,12 @@
 import TaskForm from '../components/task-form.js';
 import Task from '../components/task.js';
-import {Position, KeyCode, render} from '../utils.js';
+import {Position, KeyCode, Mode, render} from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
 export default class TaskController {
-  constructor(container, data, onDataChange, onChangeView) {
+  constructor(container, data, mode, onChangeView, onDataChange) {
     this._container = container;
     this._data = data;
     this._taskView = new Task(data);
@@ -14,10 +14,18 @@ export default class TaskController {
     this._onChangeView = onChangeView;
     this._onDataChange = onDataChange;
 
-    this.create();
+    this.create(mode);
   }
 
-  create() {
+  create(mode) {
+    let renderPosition = Position.BEFOREEND;
+    let currentView = this._taskView;
+
+    if (mode === Mode.ADDING) {
+      renderPosition = Position.AFTERBEGIN;
+      currentView = this._taskEdit;
+    }
+
     flatpickr(this._taskEdit.getElement().querySelector(`.card__date`), {
       altInput: true,
       allowInput: true,
@@ -26,7 +34,13 @@ export default class TaskController {
 
     const onEscKeyDown = (evt) => {
       if (evt.key === KeyCode.ESCAPE || evt.key === KeyCode.ESC) {
-        this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+        if (mode === Mode.DEFAULT) {
+          if (this._container.contains(this._taskEdit.getElement())) {
+            this._container.replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+          }
+        } else if (mode === Mode.ADDING) {
+          this._container.removeChild(currentView.getElement());
+        }
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
     };
@@ -35,7 +49,7 @@ export default class TaskController {
       .querySelector(`.card__btn--edit`)
       .addEventListener(`click`, () => {
         this._onChangeView();
-        this._container.getElement().replaceChild(this._taskEdit.getElement(), this._taskView.getElement());
+        this._container.replaceChild(this._taskEdit.getElement(), this._taskView.getElement());
         document.addEventListener(`keydown`, onEscKeyDown);
       });
 
@@ -51,7 +65,9 @@ export default class TaskController {
         this._addToFavorite();
       });
 
-    this._taskEdit.getElement().querySelector(`#color-${this._data.color}-4`).checked = true;
+    if (this._data.color) {
+      this._taskEdit.getElement().querySelector(`#color-${this._data.color}-4`).checked = true;
+    }
 
     this._taskEdit.getElement().querySelector(`textarea`)
       .addEventListener(`focus`, () => {
@@ -61,6 +77,11 @@ export default class TaskController {
     this._taskEdit.getElement().querySelector(`textarea`)
       .addEventListener(`blur`, () => {
         document.addEventListener(`keydown`, onEscKeyDown);
+      });
+
+    this._taskEdit.getElement().querySelector(`.card__delete`)
+      .addEventListener(`click`, () => {
+        this._onDataChange(null, this._data);
       });
 
     this._taskEdit.getElement()
@@ -87,16 +108,17 @@ export default class TaskController {
             'su': false,
           })
         };
-        this._onDataChange(entry, this._data);
+
+        this._onDataChange(entry, mode === Mode.DEFAULT ? this._data : null);
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
 
-    render(this._container.getElement(), this._taskView.getElement(), Position.BEFOREEND);
+    render(this._container, currentView.getElement(), renderPosition);
   }
 
   setDefaultView() {
-    if (this._container.getElement().contains(this._taskEdit.getElement())) {
-      this._container.getElement().replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
+    if (this._container.contains(this._taskEdit.getElement())) {
+      this._container.replaceChild(this._taskView.getElement(), this._taskEdit.getElement());
     }
   }
 

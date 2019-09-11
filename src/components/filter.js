@@ -1,23 +1,27 @@
 import AbstractComponent from './absctract-component.js';
 
 export default class Filter extends AbstractComponent {
-  constructor(filtres) {
+  constructor(data) {
     super();
-    this._filtres = filtres;
+    this._data = data;
+  }
+
+  changeData(newData) {
+    this._data = newData;
   }
 
   getTemplate() {
     return `
       <section class="main__filter filter container"> 
-        ${this._filtres.map(({title, count}) => `
+        ${this._data.map(({title, id, count}) => `
           <input
             type="radio"
-            id="filter__${title}"
+            id="${id}"
             class="filter__input visually-hidden"
             name="filter"
-            checked
+            ${count ? `` : `disabled`}
           />
-          <label for="filter__${title}" class="filter__label">
+          <label for="${id}" class="filter__label">
           ${title}
           <span class="filter__${title}-count">${count}</span></label
           >

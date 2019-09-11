@@ -1,4 +1,4 @@
-const COUNT = 18;
+const COUNT = 10;
 const getTask = () => ({
   description: [
     `Изучить теорию`,

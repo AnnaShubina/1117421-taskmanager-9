@@ -1,12 +1,19 @@
 const Position = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  AFTER: `after`,
+  BEFORE: `before`,
 };
 
 const KeyCode = {
   ESCAPE: `Escape`,
   ESC: `Esc`,
   ENTER: `Enter`
+};
+
+const Mode = {
+  ADDING: `adding`,
+  DEFAULT: `default`,
 };
 
 const createElement = (template) => {
@@ -23,6 +30,12 @@ const render = (container, element, place) => {
     case Position.BEFOREEND:
       container.append(element);
       break;
+    case Position.AFTER:
+      container.after(element);
+      break;
+    case Position.BEFORE:
+      container.before(element);
+      break;
   }
 };
 
@@ -32,4 +45,4 @@ const unrender = (element) => {
   }
 };
 
-export {Position, KeyCode, createElement, render, unrender};
+export {Position, KeyCode, Mode, createElement, render, unrender};
