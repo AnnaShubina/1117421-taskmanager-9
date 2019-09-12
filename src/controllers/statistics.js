@@ -12,18 +12,20 @@ export default class StatisticsController {
     this._container = container;
     this._statistics = new Statistics();
     this._tasks = [];
+    this._start = ``;
+    this._end = ``;
 
     this.create();
   }
 
   create() {
-    const startOfweek = moment().startOf('isoWeek').format(`DD MMM`);
-    const endOfweek = moment().endOf('isoWeek').format(`DD MMM`);
+    this._start = moment().startOf('isoWeek');
+    this._end = moment().endOf('isoWeek');
   
     flatpickr(this._statistics.getElement().querySelector(`.statistic__period-input`), {
       mode: `range`,
       dateFormat: `d M`,
-      defaultDate: [startOfweek, endOfweek]
+      defaultDate: [this._start.format(`DD MMM`), this._end.format(`DD MMM`)]
     });
 
     render(this._container, this._statistics.getElement(), Position.BEFOREEND);
@@ -37,12 +39,6 @@ export default class StatisticsController {
 
   hide() {
     this._statistics.getElement().classList.add(`visually-hidden`);
-  }
-
-  _getChartData(start, end) {
-      
-
-      
   }
 
   _chartInit() {
@@ -163,24 +159,23 @@ export default class StatisticsController {
   _chartDayInit() {
     const daysCtx = this._statistics.getElement().querySelector(`.statistic__days`);
 
-    const taskDays = this._tasks.map((task) => task.dueDate).sort((a, b) => b - a);
-    const chartData = taskDays.reduce(function(acc, currentValue) {
-        const index = acc.findIndex((el) => el[`date`] === currentValue);
-        if (index !== -1) { 
-            acc[index].count++;
-        } else {
-            acc.push({
-                date: currentValue,
-                count: 1
-            });
-        }
-        return acc;
-      }, []);
+    const taskDays = this._tasks.map((task) => task.dueDate);
+    const byDayTasks = taskDays.reduce(function(acc, currentValue) {
+      const index = acc.findIndex(({date}) => moment(date).isSame(moment(currentValue), `day`));
+      if (index !== -1) { 
+          acc[index].count++;
+      } else {
+          acc.push({
+              date: moment(currentValue).format(),
+              count: 1
+          });
+      }
+      return acc;
+    }, []);
 
-    const labels = chartData.map((el) => el.date);
-    const data = chartData.map((el) => el.count);
-    console.log(data);
-    console.log(labels);
+    const chartTasks = byDayTasks.filter(({date}) => moment(date).isSameOrAfter(moment(this._start), `day`) && moment(date).isSameOrBefore(moment(this._end), `day`));
+    const labels = chartTasks.map((el) => moment(el.date).format(`DD MMM`));
+    const counts = chartTasks.map((el) => el.count);
 
     const daysChart = new Chart(daysCtx, {
         plugins: [ChartDataLabels],
@@ -188,7 +183,7 @@ export default class StatisticsController {
         data: {
           labels: labels,
           datasets: [{
-            data: data,
+            data: counts,
             backgroundColor: `transparent`,
             borderColor: `#000000`,
             borderWidth: 1,
@@ -210,7 +205,7 @@ export default class StatisticsController {
           scales: {
             yAxes: [{
               ticks: {
-                beginAtZero:true,
+                beginAtZero: false,
                 display: false
               },
               gridLines: {
@@ -219,13 +214,6 @@ export default class StatisticsController {
               }
             }],
             xAxes: [{
-              type: 'time',
-              time: {
-                  unit: `day`,
-                  displayFormats: {
-                     day: `DD MMM`
-                  }
-              },
               ticks: {
                 fontStyle: `bold`,
                 fontColor: `#000000`
@@ -241,7 +229,10 @@ export default class StatisticsController {
           },
           layout: {
             padding: {
-              top: 10
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: 0
             }
           },
           tooltips: {
