@@ -90,7 +90,7 @@ export default class TaskForm extends AbstractComponent {
   
                 <div class="card__hashtag">
                   <div class="card__hashtag-list">
-                    ${Array.from(this._tags).map((tag, i) => i < 3 ? `<span class="card__hashtag-inner">
+                    ${Array.from(this._tags).map((tag) => `<span class="card__hashtag-inner">
                       <input
                         type="hidden"
                         name="hashtag"
@@ -98,7 +98,7 @@ export default class TaskForm extends AbstractComponent {
                         class="card__hashtag-hidden-input"
                       />
                       <p class="card__hashtag-name">#${tag}</p>
-                      <button type="button" class="card__hashtag-delete">delete</button></span>` : ``).join(``)}
+                      <button type="button" class="card__hashtag-delete">delete</button></span>`).join(``)}
                   </div>
   
                   <label>

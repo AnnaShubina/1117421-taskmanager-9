@@ -16,6 +16,14 @@ const Mode = {
   DEFAULT: `default`,
 };
 
+const colorsHex = {
+  pink: `#ff3cb9`,
+  yellow: `#ffe125`,
+  blue: `#0c5cdd`,
+  black: `#000000`,
+  green: `#31b55c`
+};
+
 const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
@@ -45,4 +53,4 @@ const unrender = (element) => {
   }
 };
 
-export {Position, KeyCode, Mode, createElement, render, unrender};
+export {Position, KeyCode, Mode, createElement, colorsHex, render, unrender};
