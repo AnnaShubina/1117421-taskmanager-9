@@ -40,12 +40,15 @@ export default class StatisticsController {
     render(this._container, this._statistics.getElement(), Position.BEFOREEND);
   }
 
-  show(tasks) {
-    this._tasks = tasks.filter(({isArchive}) => isArchive);
+  show() {
     this._statistics.getElement().classList.remove(`visually-hidden`);
     this._chartDaysInit();
     this._chartTagsInit();
     this._chartColorsInit();
+  }
+
+  setTasks(tasks) {
+    this._tasks = tasks.filter(({isArchive}) => isArchive);
   }
 
   hide() {
@@ -131,7 +134,7 @@ export default class StatisticsController {
   _chartDaysInit() {
     const daysCtx = this._statistics.getElement().querySelector(`.statistic__days`);
 
-    const taskDays = this._tasks.map((task) => task.dueDate).sort((a, b) => a - b);
+    const taskDays = this._tasks.map((task) => task.dueDate).sort((a, b) => moment.utc(a.timeStamp).diff(moment.utc(b.timeStamp)));
     const byDayTasks = taskDays.reduce((acc, currentValue) => {
       const index = acc.findIndex(({date}) => moment(date).isSame(moment(currentValue), `day`));
       if (index !== -1) {
