@@ -22,6 +22,13 @@ const Action = {
   UPDATE: `update`
 };
 
+const ButtonText = {
+  SAVING: `Saving....`,
+  DELETING: `Deleting....`,
+  SAVE: `Save`,
+  DELETE: `Delete`
+};
+
 const colorsHex = {
   pink: `#ff3cb9`,
   yellow: `#ffe125`,
@@ -59,4 +66,4 @@ const unrender = (element) => {
   }
 };
 
-export {Position, KeyCode, Mode, Action, createElement, colorsHex, render, unrender};
+export {Position, KeyCode, Mode, Action, ButtonText, createElement, colorsHex, render, unrender};

@@ -4,7 +4,7 @@ import BoardController from './controllers/board.js';
 import SearchController from './controllers/search.js';
 import FilterController from './controllers/filter.js';
 import StatisticsController from './controllers/statistics.js';
-import {Position, Action, render} from './utils.js';
+import {Position, Action, ButtonText, render} from './utils.js';
 import ModelTask from './model-task.js';
 import API from './api.js';
 
@@ -27,29 +27,50 @@ api.getTasks().then((tasks) => {
     searchController.setTasks(newTasks);
     statisticsController.setTasks(newTasks);
   };
-  const onDataChange = (actionType, update) => {
+  const onDataChange = (actionType, update, element) => {
     switch (actionType) {
       case Action.UPDATE:
+        element.block();
+        element.changeSubmitBtnText(ButtonText.SAVING);
         api.updateTask({
           id: update.id,
           data: ModelTask.toRAW(update)
         })
           .then(() => api.getTasks())
-          .then((data) => updateData(data));
+          .then((data) => updateData(data))
+          .catch(() => {
+            element.shake();
+            element.unblock();
+            element.changeSubmitBtnText(ButtonText.SAVE);
+          });
         break;
       case Action.DELETE:
+        element.block();
+        element.changeDeleteBtnText(ButtonText.DELETING);
         api.deleteTask({
           id: update.id
         })
           .then(() => api.getTasks())
-          .then((data) => updateData(data));
+          .then((data) => updateData(data))
+          .catch(() => {
+            element.shake();
+            element.unblock();
+            element.changeDeleteBtnText(ButtonText.DELETE);
+          });
         break;
       case Action.CREATE:
+        element.block();
+        element.changeSubmitBtnText(ButtonText.SAVING);
         api.createTask({
           task: ModelTask.toRAW(update)
         })
           .then(() => api.getTasks())
-          .then((data) => updateData(data));
+          .then((data) => updateData(data))
+          .catch(() => {
+            element.shake();
+            element.unblock();
+            element.changeSubmitBtnText(ButtonText.SAVE);
+          });
         break;
     }
   };
