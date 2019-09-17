@@ -16,6 +16,12 @@ const Mode = {
   DEFAULT: `default`,
 };
 
+const Action = {
+  DELETE: `delete`,
+  CREATE: `create`,
+  UPDATE: `update`
+};
+
 const colorsHex = {
   pink: `#ff3cb9`,
   yellow: `#ffe125`,
@@ -53,4 +59,4 @@ const unrender = (element) => {
   }
 };
 
-export {Position, KeyCode, Mode, createElement, colorsHex, render, unrender};
+export {Position, KeyCode, Mode, Action, createElement, colorsHex, render, unrender};

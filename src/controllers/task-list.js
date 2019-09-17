@@ -1,7 +1,6 @@
 import TaskController from '../controllers/task.js';
 import LoadMore from '../components/load-more.js';
 import {Mode as TaskControllerMode, Position, render, unrender} from '../utils.js';
-import ModelTask from '../model-task.js';
 
 const TASK_COUNT_SHOW = 8;
 
@@ -60,10 +59,10 @@ export default class TaskListController {
 
     const defaultTask = {
       description: ``,
-      due_date: new Date(),
-      tags: [],
+      dueDate: new Date(),
+      tags: new Set(),
       color: ``,
-      repeating_days: {
+      repeatingDays: {
         'mo': false,
         'tu': false,
         'we': false,
@@ -72,11 +71,11 @@ export default class TaskListController {
         'sa': false,
         'su': false,
       },
-      is_archived: false,
-      is_favorite: false,
+      isFavorite: false,
+      isArchive: false,
     };
 
-    this._creatingTask = new TaskController(this._container, ModelTask.parseTask(defaultTask), TaskControllerMode.ADDING, this._onChangeView, this._onDataChange);
+    this._creatingTask = new TaskController(this._container, defaultTask, TaskControllerMode.ADDING, this._onChangeView, this._onDataChange);
   }
 
   _renderTask(task) {

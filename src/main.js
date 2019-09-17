@@ -4,7 +4,8 @@ import BoardController from './controllers/board.js';
 import SearchController from './controllers/search.js';
 import FilterController from './controllers/filter.js';
 import StatisticsController from './controllers/statistics.js';
-import {Position, render} from './utils.js';
+import {Position, Action, render} from './utils.js';
+import ModelTask from './model-task.js';
 import API from './api.js';
 
 const mainContainer = document.querySelector(`.main`);
@@ -28,24 +29,24 @@ api.getTasks().then((tasks) => {
   };
   const onDataChange = (actionType, update) => {
     switch (actionType) {
-      case `update`:
+      case Action.UPDATE:
         api.updateTask({
           id: update.id,
-          data: update.toRAW()
+          data: ModelTask.toRAW(update)
         })
           .then(() => api.getTasks())
           .then((data) => updateData(data));
         break;
-      case `delete`:
+      case Action.DELETE:
         api.deleteTask({
           id: update.id
         })
           .then(() => api.getTasks())
           .then((data) => updateData(data));
         break;
-      case `create`:
+      case Action.CREATE:
         api.createTask({
-          task: update.toRAW()
+          task: ModelTask.toRAW(update)
         })
           .then(() => api.getTasks())
           .then((data) => updateData(data));

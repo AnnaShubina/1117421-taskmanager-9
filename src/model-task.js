@@ -18,16 +18,16 @@ export default class ModelTask {
     return data.map(ModelTask.parseTask);
   }
 
-  toRAW() {
+  static toRAW(data) {
     return {
-      'id': this.id,
-      'description': this.description,
-      'due_date': this.dueDate,
-      'tags': [...this.tags.values()],
-      'repeating_days': this.repeatingDays,
-      'color': this.color,
-      'is_favorite': this.isFavorite,
-      'is_archived': this.isArchive,
+      'id': data.id,
+      'description': data.description,
+      'due_date': data.dueDate,
+      'tags': [...data.tags.values()],
+      'repeating_days': data.repeatingDays,
+      'color': data.color,
+      'is_favorite': data.isFavorite,
+      'is_archived': data.isArchive,
     };
   }
 }
