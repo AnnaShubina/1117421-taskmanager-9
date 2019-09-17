@@ -81,7 +81,7 @@ export default class TaskController {
 
     this._taskEdit.getElement().querySelector(`.card__delete`)
       .addEventListener(`click`, () => {
-        this._onDataChange(`delete`, this._data);
+        this._onDataChange(`delete`, this._data, this._taskEdit);
       });
 
     this._taskEdit.getElement()
@@ -107,7 +107,7 @@ export default class TaskController {
           'su': false,
         });
 
-        this._onDataChange(mode === Mode.DEFAULT ? `update` : `create`, this._data);
+        this._onDataChange(mode === Mode.DEFAULT ? `update` : `create`, this._data, this._taskEdit);
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
 
