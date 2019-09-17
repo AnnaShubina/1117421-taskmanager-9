@@ -5,15 +5,14 @@ import TaskListController from '../controllers/task-list.js';
 import {Position, render} from '../utils.js';
 
 export default class BoardController {
-  constructor(container, onFilterChange, onDataChange) {
+  constructor(container, onDataChange) {
     this._container = container;
     this._tasks = [];
     this._board = new Board();
     this._taskList = new TaskList();
     this._sorting = new Sorting();
     this._onDataChangeMain = onDataChange;
-    this._onFilterChange = onFilterChange;
-    this._taskListController = new TaskListController(this._taskList.getElement(), this.onDataChange.bind(this));
+    this._taskListController = new TaskListController(this._taskList.getElement(), this._onDataChangeMain);
 
     this._init();
   }
@@ -45,22 +44,13 @@ export default class BoardController {
   _setTasks(tasks) {
     this._tasks = tasks;
 
-    const isTasksExist = this._tasks.length && !this._tasks.filter(({
-      isArchive
-    }) => isArchive).length;
+    const isTasksExist = this._tasks.length && this._tasks.filter(({isArchive}) => isArchive).length !== this._tasks.length;
 
     if (isTasksExist) {
       this._renderBoard(this._tasks);
     } else {
       this._renderEmptyMessage();
     }
-  }
-
-  onDataChange(tasks) {
-    this._tasks = tasks;
-    this._renderBoard(this._tasks);
-    this._onFilterChange(this._tasks);
-    this._onDataChangeMain(this._tasks);
   }
 
   onFilterSwitch(tasks) {

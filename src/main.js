@@ -1,80 +1,114 @@
 import Menu from './components/main-menu.js';
 import Search from './components/search.js';
-import dataTasks from './mocks/task.js';
 import BoardController from './controllers/board.js';
 import SearchController from './controllers/search.js';
 import FilterController from './controllers/filter.js';
 import StatisticsController from './controllers/statistics.js';
-import {Position, render} from './utils.js';
+import {Position, Action, render} from './utils.js';
+import ModelTask from './model-task.js';
+import API from './api.js';
 
 const mainContainer = document.querySelector(`.main`);
 const menuContainer = document.querySelector(`.main__control`);
 const menu = new Menu();
 const search = new Search();
-let taskMocks = dataTasks;
-const onDataChange = (tasks) => {
-  taskMocks = tasks;
-};
-const onFilterSwitch = (tasks) => {
-  boardController.onFilterSwitch(tasks);
-  statisticsController.hide();
-  boardController.show();
-  searchController.hide();
-};
-const onFilterChange = (tasks) => {
-  filterController.filterChange(tasks);
-};
 
 render(menuContainer, menu.getElement(), Position.BEFOREEND);
 render(mainContainer, search.getElement(), Position.BEFOREEND);
 
-const filterController = new FilterController(search.getElement(), taskMocks, onFilterSwitch);
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://htmlacademy-es-9.appspot.com/task-manager`;
+const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
-const statisticsController = new StatisticsController(mainContainer, taskMocks);
+api.getTasks().then((tasks) => {
+  const updateData = (newTasks) => {
+    boardController.show(newTasks);
+    filterController.filterChange(newTasks);
+    searchController.setTasks(newTasks);
+    statisticsController.setTasks(newTasks);
+  };
+  const onDataChange = (actionType, update) => {
+    switch (actionType) {
+      case Action.UPDATE:
+        api.updateTask({
+          id: update.id,
+          data: ModelTask.toRAW(update)
+        })
+          .then(() => api.getTasks())
+          .then((data) => updateData(data));
+        break;
+      case Action.DELETE:
+        api.deleteTask({
+          id: update.id
+        })
+          .then(() => api.getTasks())
+          .then((data) => updateData(data));
+        break;
+      case Action.CREATE:
+        api.createTask({
+          task: ModelTask.toRAW(update)
+        })
+          .then(() => api.getTasks())
+          .then((data) => updateData(data));
+        break;
+    }
+  };
+  const onFilterSwitch = (tasksItems) => {
+    boardController.onFilterSwitch(tasksItems);
+    statisticsController.hide();
+    boardController.show();
+    searchController.hide();
+    menu.getElement().querySelector(`#control__task`).checked = true;
+  };
 
-const boardController = new BoardController(mainContainer, onFilterChange, onDataChange);
-const onSearchBackButtonClick = () => {
+  const filterController = new FilterController(search.getElement(), tasks, onFilterSwitch);
+  const statisticsController = new StatisticsController(mainContainer, tasks);
+  const boardController = new BoardController(mainContainer, onDataChange);
+  const onSearchBackButtonClick = () => {
+    statisticsController.hide();
+    searchController.hide();
+    boardController.show();
+  };
+  const searchController = new SearchController(mainContainer, search, onSearchBackButtonClick);
+  searchController.setTasks(tasks);
+  statisticsController.setTasks(tasks);
   statisticsController.hide();
-  searchController.hide();
-  boardController.show(taskMocks);
-};
-const searchController = new SearchController(mainContainer, search, onSearchBackButtonClick);
-statisticsController.hide();
-boardController.show(taskMocks);
+  boardController.show(tasks);
 
-menu.getElement().addEventListener(`change`, (evt) => {
-  evt.preventDefault();
+  menu.getElement().addEventListener(`change`, (evt) => {
+    evt.preventDefault();
 
-  if (evt.target.tagName !== `INPUT`) {
-    return;
-  }
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
 
-  const tasksId = `control__task`;
-  const statisticId = `control__statistic`;
-  const newTaskId = `control__new-task`;
+    const tasksId = `control__task`;
+    const statisticId = `control__statistic`;
+    const newTaskId = `control__new-task`;
 
-  switch (evt.target.id) {
-    case tasksId:
-      statisticsController.hide();
-      boardController.show();
-      searchController.hide();
-      break;
-    case statisticId:
-      boardController.hide();
-      searchController.hide();
-      statisticsController.show(taskMocks);
-      break;
-    case newTaskId:
-      boardController.createTask();
-      boardController.show();
-      statisticsController.hide();
-      menu.getElement().querySelector(`#${tasksId}`).checked = true;
-      break;
-  }
-});
+    switch (evt.target.id) {
+      case tasksId:
+        statisticsController.hide();
+        boardController.show();
+        searchController.hide();
+        break;
+      case statisticId:
+        boardController.hide();
+        searchController.hide();
+        statisticsController.show();
+        break;
+      case newTaskId:
+        boardController.createTask();
+        boardController.show();
+        statisticsController.hide();
+        menu.getElement().querySelector(`#${tasksId}`).checked = true;
+        break;
+    }
+  });
 
-search.getElement().addEventListener(`click`, () => {
-  statisticsController.hide();
-  boardController.hide();
-  searchController.show(taskMocks);
+  search.getElement().addEventListener(`click`, () => {
+    statisticsController.hide();
+    boardController.hide();
+    searchController.show();
+  });
 });

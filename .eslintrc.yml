@@ -8,3 +8,7 @@ env:
   commonjs: true
 
 extends: 'htmlacademy/es6'
+
+rules: {
+  camelcase: [error, {properties: never}]
+}

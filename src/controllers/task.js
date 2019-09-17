@@ -81,7 +81,7 @@ export default class TaskController {
 
     this._taskEdit.getElement().querySelector(`.card__delete`)
       .addEventListener(`click`, () => {
-        this._onDataChange(null, this._data);
+        this._onDataChange(`delete`, this._data);
       });
 
     this._taskEdit.getElement()
@@ -90,26 +90,24 @@ export default class TaskController {
         evt.preventDefault();
 
         const formData = new FormData(this._taskEdit.getElement().querySelector(`.card__form`));
-        const entry = {
-          description: formData.get(`text`),
-          color: formData.get(`color`),
-          tags: new Set(formData.getAll(`hashtag`)),
-          dueDate: formData.get(`date`) ? new Date(formData.get(`date`)) : ``,
-          repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
-            acc[it] = true;
-            return acc;
-          }, {
-            'mo': false,
-            'tu': false,
-            'we': false,
-            'th': false,
-            'fr': false,
-            'sa': false,
-            'su': false,
-          })
-        };
+        this._data.description = formData.get(`text`);
+        this._data.color = formData.get(`color`);
+        this._data.tags = new Set(formData.getAll(`hashtag`));
+        this._data.dueDate = formData.get(`date`) ? new Date(formData.get(`date`)) : ``;
+        this._data.repeatingDays = formData.getAll(`repeat`).reduce((acc, it) => {
+          acc[it] = true;
+          return acc;
+        }, {
+          'mo': false,
+          'tu': false,
+          'we': false,
+          'th': false,
+          'fr': false,
+          'sa': false,
+          'su': false,
+        });
 
-        this._onDataChange(entry, mode === Mode.DEFAULT ? this._data : null);
+        this._onDataChange(mode === Mode.DEFAULT ? `update` : `create`, this._data);
         document.removeEventListener(`keydown`, onEscKeyDown);
       });
 
@@ -123,22 +121,12 @@ export default class TaskController {
   }
 
   _addToArchive() {
-    const newData = Object.assign({}, this._data);
-    if (newData.isArchive) {
-      newData.isArchive = false;
-    } else {
-      newData.isArchive = true;
-    }
-    this._onDataChange(newData, this._data);
+    this._data.isArchive = true;
+    this._onDataChange(`update`, this._data);
   }
 
   _addToFavorite() {
-    const newData = Object.assign({}, this._data);
-    if (newData.isFavorite) {
-      newData.isFavorite = false;
-    } else {
-      newData.isFavorite = true;
-    }
-    this._onDataChange(newData, this._data);
+    this._data.isFavorite = true;
+    this._onDataChange(`update`, this._data);
   }
 }

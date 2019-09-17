@@ -72,9 +72,11 @@ export default class SearchController {
     this._searchResult.getElement().classList.add(`visually-hidden`);
   }
 
-  show(tasks) {
+  setTasks(tasks) {
     this._tasks = tasks;
+  }
 
+  show() {
     if (this._searchResult.getElement().classList.contains(`visually-hidden`)) {
       this._showSearchResult(``, this._tasks);
       this._searchResult.getElement().classList.remove(`visually-hidden`);
